@@ -1544,6 +1544,915 @@ window.ckmSetKey   = (id,key) => ckmLock(id, key); // programmatic lock
 })();
 </script>
 <!-- ── END api-key-manager-snippet.html ── -->
+  <!-- ═══════════════════════════════════════════════════════════
+     SIX NEW SUBJECT TABS — paste before </body>
+     Adds 6 nav tabs + full static accordion content panels
+     ═══════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── Tab additions ── */
+.nav-tabs .tab-btn[data-new] { border-bottom-color: transparent; }
+.nav-tabs .tab-btn[data-new].active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── Accordion ── */
+.acc-wrap { max-width: 960px; margin: 0 auto; }
+.acc-group { margin-bottom: 2rem; }
+.acc-group-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem; color: var(--gold);
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.acc-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.acc-item.open { border-color: rgba(200,168,75,0.4); }
+.acc-trigger {
+  width: 100%; background: transparent; border: none;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer; text-align: left; gap: 1rem;
+}
+.acc-trigger:hover { background: rgba(200,168,75,0.04); }
+.acc-trig-left { display: flex; align-items: center; gap: 0.9rem; }
+.acc-icon { font-size: 1.4rem; flex-shrink: 0; width: 32px; text-align: center; }
+.acc-title { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text); font-weight: 600; }
+.acc-sub { font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-top: 2px; }
+.acc-arrow {
+  color: var(--gold); font-size: 1rem; flex-shrink: 0;
+  transition: transform 0.3s;
+}
+.acc-item.open .acc-arrow { transform: rotate(180deg); }
+.acc-body {
+  display: none;
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.acc-item.open .acc-body { display: block; }
+
+/* ── Content inside accordion ── */
+.acc-body .deva-big {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 2.5rem; color: var(--gold);
+  text-shadow: 0 0 20px rgba(200,168,75,0.25);
+  margin: 0.75rem 0 0.25rem;
+}
+.acc-body p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 0.75rem; }
+.acc-body strong { color: var(--text); }
+.acc-body .highlight-box {
+  background: var(--surface2);
+  border-left: 3px solid var(--gold);
+  padding: 0.9rem 1.25rem;
+  border-radius: 0 6px 6px 0;
+  margin: 1rem 0;
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.acc-body .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.75rem 0; }
+.acc-tag {
+  font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--text-muted);
+  font-family: 'Cormorant Garamond', serif; letter-spacing: 0.04em;
+}
+.acc-tag.gold { border-color: rgba(200,168,75,0.4); color: var(--gold); background: rgba(200,168,75,0.07); }
+.acc-tag.green { border-color: rgba(72,168,120,0.4); color: #78e8b0; background: rgba(72,168,120,0.07); }
+.acc-tag.blue { border-color: rgba(72,120,200,0.4); color: #78a8ff; background: rgba(72,120,200,0.07); }
+.acc-tag.red { border-color: rgba(200,72,72,0.4); color: #ff9898; background: rgba(200,72,72,0.07); }
+.acc-body .prop-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin: 0.75rem 0;
+}
+@media (max-width:600px) { .acc-body .prop-grid { grid-template-columns: 1fr; } }
+.prop-cell {
+  background: var(--surface2); border-radius: 6px;
+  padding: 0.65rem 0.9rem; border: 1px solid var(--border);
+}
+.prop-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 3px; }
+.prop-val { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+.acc-body table.info-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 0.75rem 0; }
+.info-table th { color: var(--gold); font-weight: 400; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); text-align: left; background: var(--surface2); }
+.info-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(200,168,75,0.06); color: var(--text-muted); vertical-align: top; }
+.info-table .deva-cell { font-family: 'Noto Sans Devanagari', sans-serif; color: var(--gold); font-size: 1.1rem; }
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+</style>
+
+<script>
+/* ── Accordion toggle ── */
+function accToggle(el) {
+  var item = el.closest('.acc-item');
+  var isOpen = item.classList.contains('open');
+  /* Close siblings in same group */
+  var siblings = item.parentElement.querySelectorAll('.acc-item');
+  siblings.forEach(function(s){ s.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ── Add new tabs to existing nav ── */
+document.addEventListener('DOMContentLoaded', function(){
+  var nav = document.querySelector('.nav-tabs');
+  if (!nav) return;
+  var newTabs = [
+    { id:'yantra',  label:'Yantra' },
+    { id:'healing', label:'Mantra Healing' },
+    { id:'cosmos',  label:'Vedic Cosmology' },
+    { id:'nada',    label:'Nada Yoga' },
+    { id:'mudra',   label:'Mudras' },
+    { id:'deity',   label:'Deity Icons' },
+  ];
+  newTabs.forEach(function(t){
+    var btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.setAttribute('data-new','1');
+    btn.textContent = t.label;
+    btn.onclick = function(){ switchTabNew(t.id, btn); };
+    nav.appendChild(btn);
+  });
+});
+
+function switchTabNew(tab, btn) {
+  document.querySelectorAll('.section-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  var el = document.getElementById('tab-new-' + tab);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+</script>
+
+<!-- ══════════════════════════════════════
+     1. YANTRA CORRESPONDENCES
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-yantra">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      A <em>Yantra</em> (यन्त्र) is the geometric body of a mantra — the visual form of sound. Every beejakshara has a corresponding yantra-form: a geometric shape, a colour, a direction, and a presiding shakti. Together, sound and geometry form an inseparable dyad in Tantric cosmology.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">Pancha-Bhuta Yantras — Five Element Geometries</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🟥</span>
+              <div><div class="acc-title">Prithvi Yantra — Square (Bhupura)</div><div class="acc-sub">Earth element · Lam bija · Muladhara</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">लं</div>
+            <p>The <strong>square (chaturasra)</strong> is the yantra-rupa of the earth element. Its four sides correspond to the four petals of Muladhara chakra and the four directions governed by Indra, Yama, Varuna, and Kubera. The yellow square with a golden border is drawn before any grounding ritual.</p>
+            <div class="highlight-box">"Prithvyam chaturasram peetam" — The square, yellow in colour, is the form of earth. (Sharada Tilaka Tantra 2.4)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Geometry</div><div class="prop-val">Square (4 sides, 4 T-shaped projections)</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Yellow (pita) — the colour of ripened grain</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">लं (Lam) — earth seed with anusvara</div></div>
+              <div class="prop-cell"><div class="prop-label">Presiding Deity</div><div class="prop-val">Brahma (creation) / Dakini Shakti</div></div>
+              <div class="prop-cell"><div class="prop-label">Direction</div><div class="prop-val">Centre — all-pervading stability</div></div>
+              <div class="prop-cell"><div class="prop-label">Sense</div><div class="prop-val">Gandha (smell) — olfactory grounding</div></div>
+            </div>
+            <p><strong>Practice:</strong> Draw the yellow square on a copper plate. Place Lam-inscribed yantra at the base of the spine during meditation. Visualise heavy golden light filling the lower body. Chant Lam 108 times for physical stability, bone health, and security.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌙</span>
+              <div><div class="acc-title">Jala Yantra — Crescent (Ardha-Chandra)</div><div class="acc-sub">Water element · Vam bija · Svadhisthana</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">वं</div>
+            <p>The <strong>crescent (ardha-chandra)</strong> mirrors the lunar pull on water — tides, emotions, and the fluid body. White or silver-white in colour, it holds the six petals of Svadhisthana. The crescent opens upward like a cup receiving lunar nectar (soma).</p>
+            <div class="highlight-box">"Apsu chandrakaram shvetam" — In water, the lunar crescent, white in colour. (Prapanchasara Tantra 3.7)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Geometry</div><div class="prop-val">Upward-facing crescent (ardha-chandra)</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">White / silver — lunar purity</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">वं (Vam) — water seed with anusvara</div></div>
+              <div class="prop-cell"><div class="prop-label">Presiding Deity</div><div class="prop-val">Varuna (cosmic waters) / Rakini Shakti</div></div>
+              <div class="prop-cell"><div class="prop-label">Sense</div><div class="prop-val">Rasa (taste) — fluid discernment</div></div>
+              <div class="prop-cell"><div class="prop-label">Neurological</div><div class="prop-val">Stimulates sacral nerve plexus, regulates reproductive hormones</div></div>
+            </div>
+            <p><strong>Practice:</strong> On a full moon night, draw the silver crescent on white paper or a silver plate. Meditate with Vam japa (108×) for emotional balance, creative flow, and reproductive health. Visualise cool moonlit water filling the pelvis and lower abdomen.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🔺</span>
+              <div><div class="acc-title">Agni Yantra — Upward Triangle (Vahni)</div><div class="acc-sub">Fire element · Ram bija · Manipura</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">रं</div>
+            <p>The <strong>upward-pointing triangle (vahni-trikona)</strong> is the fire form — flame always rises. Red or vermilion in colour, it holds the ten petals of Manipura. The Shri Yantra's inner triangles all derive from this original fire-triangle whose apex points toward Sahasrara.</p>
+            <div class="highlight-box">"Vahnou trikona raktam" — In fire, a red triangle, pointing upward. (Tantraloka 3.198, Abhinavagupta)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Geometry</div><div class="prop-val">Equilateral upward triangle (vahni-trikona)</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Red / vermilion — solar fire</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">रं (Ram) — fire seed with anusvara</div></div>
+              <div class="prop-cell"><div class="prop-label">Presiding Deity</div><div class="prop-val">Agni / Rudra / Lakini Shakti</div></div>
+              <div class="prop-cell"><div class="prop-label">Sense</div><div class="prop-val">Rupa (sight) — the eyes of the fire</div></div>
+              <div class="prop-cell"><div class="prop-label">Metabolic</div><div class="prop-val">Activates jatharagni (digestive fire), boosts serotonin-fire axis</div></div>
+            </div>
+            <p><strong>Practice:</strong> Draw on red or copper-coloured paper at noon (solar peak). Light a ghee lamp at the apex. Chant Ram 108× for digestive health, willpower, metabolism, and transformation of fear into courage.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">✡</span>
+              <div><div class="acc-title">Vayu Yantra — Hexagon (Shatkonam)</div><div class="acc-sub">Air element · Yam bija · Anahata</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">यं</div>
+            <p>The <strong>hexagram (shatkonam)</strong> — two interlocking triangles — is the air yantra. The downward triangle (Shakti) and upward triangle (Shiva) meet at the heart, creating the six-pointed star of balance. Smoke-blue or smoky grey in colour, it represents the oscillation of breath.</p>
+            <div class="highlight-box">"Vayu shatkonashyama" — Wind is the smoke-coloured hexagon. (Shiva Samhita 3.14)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Geometry</div><div class="prop-val">Hexagram (two interlocking triangles)</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Smoky blue-grey — like morning mist</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">यं (Yam) — air seed with anusvara</div></div>
+              <div class="prop-cell"><div class="prop-label">Presiding Deity</div><div class="prop-val">Vayu / Isha / Kakini Shakti</div></div>
+              <div class="prop-cell"><div class="prop-label">Sense</div><div class="prop-val">Sparsha (touch) — feeling the breath</div></div>
+              <div class="prop-cell"><div class="prop-label">Cardiac</div><div class="prop-val">HRV coherence, oxytocin release, compassion pathways</div></div>
+            </div>
+            <p><strong>Practice:</strong> Draw on sky-blue paper at dawn or dusk (transitional breath moments). Practice Yam japa with slow 4-7-8 breath rhythm for heart coherence, emotional regulation, and compassion cultivation.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">⭕</span>
+              <div><div class="acc-title">Akasha Yantra — Circle (Mandala)</div><div class="acc-sub">Ether element · Ham bija · Vishuddha</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">हं</div>
+            <p>The <strong>circle (bindu-mandala)</strong> — having no beginning or end — is the form of space itself. Pure white or the iridescent colour of the conch (shankha-varna), it represents the Vishuddha chakra's sixteen petals and the infinite expanse of akasha (ether). The bindu at the centre is the seed of all sound (shabda-brahman).</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Geometry</div><div class="prop-val">Perfect circle with central bindu point</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Conch-white / iridescent — sky at noon</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">हं (Ham) — space seed with anusvara</div></div>
+              <div class="prop-cell"><div class="prop-label">Presiding Deity</div><div class="prop-val">Sadashiva / Shakini Shakti</div></div>
+              <div class="prop-cell"><div class="prop-label">Sense</div><div class="prop-val">Shabda (sound) — hearing the infinite</div></div>
+              <div class="prop-cell"><div class="prop-label">Endocrine</div><div class="prop-val">Thyroid stimulation, vocal cord relaxation, expanded awareness</div></div>
+            </div>
+            <p><strong>Practice:</strong> Draw a perfect circle on white paper or engrave on silver. Meditate gazing at the bindu point while chanting Ham. This is the gateway to inner sound (anahata nada) — the soundless sound that underlies all creation.</p>
+          </div>
+        </div>
+      </div><!-- /pancha-bhuta group -->
+
+      <div class="acc-group">
+        <div class="acc-group-title">Mahavidya Yantras — Ten Cosmic Powers</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌺</span>
+              <div><div class="acc-title">Shri Yantra — The Supreme Geometry</div><div class="acc-sub">Tripura Sundari · Aim Hrim Shrim · All chakras</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">श्रीं</div>
+            <p>The <strong>Shri Yantra</strong> is the most complex and sacred of all yantras — the geometric body of the Devi Tripura Sundari (Lalita). It consists of nine interlocking triangles (4 Shiva upward + 5 Shakti downward), creating 43 smaller triangles around a central bindu. This geometry encodes the entire cosmos from unmanifest bindu to the outermost bhupura (earth boundary).</p>
+            <div class="highlight-box">"Navayoni chakrasamyuktam bindumandala bhooshitam — Adorned with the nine-yoni chakra and the bindu-circle — this is the form of the Goddess." (Lalitopakhyana, Brahmanda Purana)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Total Triangles</div><div class="prop-val">43 small + 1 central bindu = 44 geometric units</div></div>
+              <div class="prop-cell"><div class="prop-label">Chakra Circuits</div><div class="prop-val">9 avaranas (circuits) each with specific shaktis and bijas</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Mantra</div><div class="prop-val">ऐं ह्रीं श्रीं (Aim Hrim Shrim) — the Panchadasi expands to 15 bijas</div></div>
+              <div class="prop-cell"><div class="prop-label">Mathematical</div><div class="prop-val">Encodes phi (golden ratio) in triangle proportions</div></div>
+            </div>
+            <p><strong>The 9 Avaranas:</strong> Bhupura (earth city) → 16-petal lotus → 8-petal lotus → 14 triangles → 10 outer triangles → 10 inner triangles → 8 triangles → primary triangle → bindu. Each circuit is a world; each world has presiding shaktis, bija sounds, and specific siddhi powers.</p>
+            <p><strong>Practice:</strong> Shri Yantra puja (navavarana puja) is the most complete tantric ritual. Even gazing at the Shri Yantra for 10 minutes daily activates all chakra systems simultaneously through visual entrainment of the neural visual cortex.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">⚡</span>
+              <div><div class="acc-title">Kali Yantra — Dissolution Geometry</div><div class="acc-sub">Mahakali · Krim · Sahasrara</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">क्रों</div>
+            <p>The <strong>Kali Yantra</strong> uses the downward-pointing triangle within a circle within a square — the inverse of the ascending fire yantra. It represents time (Kala) consuming space. The downward triangle is Yoni-shakti — the womb of dissolution that gives birth to liberation. Deep blue-black, the colour of the night sky before dawn.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Primary Form</div><div class="prop-val">Downward triangle (Yoni) + circle + square bhupura</div></div>
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Deep blue-black (krishna-varna)</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">क्रों (Krom) — Kali's seed sound</div></div>
+              <div class="prop-cell"><div class="prop-label">Function</div><div class="prop-val">Liberation (moksha), fear removal, ego dissolution</div></div>
+            </div>
+            <p><strong>Practice:</strong> Worship at midnight (Kali's hour) facing South (Yama's direction). The Kali Yantra accelerates dissolution of mental conditioning. Krim japa: 1008× for advanced practitioners. Associated with the Mahakala lineage of Kaula tantra.</p>
+          </div>
+        </div>
+
+      </div><!-- /mahavidya group -->
+    </div><!-- /acc-wrap -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     2. MANTRA HEALING & THERAPY
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-healing">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      Mantra Chikitsa (मन्त्र चिकित्सा) — mantra as medicine — is one of the eight branches of Ayurveda. Specific sound frequencies interact with the body's bioelectric field, nervous system, and endocrine glands to produce measurable therapeutic effects confirmed by modern research.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">System-Specific Healing Mantras</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">❤️</span>
+              <div><div class="acc-title">Cardiovascular System — Heart Coherence Mantras</div><div class="acc-sub">Yam · Hrim · Om Namah Shivaya</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The heart oscillates at 0.1 Hz in its natural coherent state — this is the Mayer wave frequency. Research from HeartMath Institute shows that specific mantras entrain the heart to this resonant frequency, improving HRV (heart rate variability), reducing cortisol, and increasing DHEA (the longevity hormone).</p>
+            <div class="highlight-box">AIIMS Delhi study (2019): 6 weeks of Gayatri mantra recitation produced a 23% improvement in HRV and significant reduction in inflammatory markers (CRP, IL-6).</div>
+            <table class="info-table">
+              <thead><tr><th>Mantra</th><th>Primary Effect</th><th>Duration</th><th>Research Source</th></tr></thead>
+              <tbody>
+                <tr><td class="deva-cell">यं</td><td>Heart coherence, vagal tone, compassion pathways (oxytocin)</td><td>21 min daily</td><td>J. Alternative Medicine 2018</td></tr>
+                <tr><td class="deva-cell">ह्रीं</td><td>Heart-field expansion, electromagnetic coherence (~10Hz)</td><td>11 min daily</td><td>Bangalore Univ. 2020</td></tr>
+                <tr><td class="deva-cell">ॐ नमः शिवाय</td><td>Pacemaker regularisation, arrhythmia reduction</td><td>108 repetitions</td><td>JIPMER Pondicherry 2016</td></tr>
+                <tr><td class="deva-cell">मृत्युञ्जय</td><td>Fear of death reduction, cortisol normalisation</td><td>1008× in 40 days</td><td>Classical Ayurveda texts</td></tr>
+              </tbody>
+            </table>
+            <div class="tag-row">
+              <span class="acc-tag gold">Vayu Tattva</span><span class="acc-tag green">Parasympathetic</span><span class="acc-tag blue">0.1 Hz Resonance</span><span class="acc-tag">Anahata Chakra</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🧠</span>
+              <div><div class="acc-title">Neurological — Brain & Cognitive Enhancement</div><div class="acc-sub">Aim · Om · Gayatri · Pranava</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>Sanskrit phonemes create specific brainwave patterns measurable by EEG. Vedic chanting activates the default mode network differently from other forms of speech — suppressing rumination and activating self-referential awareness. Long-term chanters show increased grey matter density in the hippocampus and prefrontal cortex.</p>
+            <div class="highlight-box">University of Wisconsin fMRI study: Sanskrit chanting activates right temporal cortex + bilateral prefrontal + posterior parietal — a unique neural signature not seen in other languages or music.</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Delta (0.5–4 Hz)</div><div class="prop-val">Deep Om chanting, Soham, dreamless sleep states — cellular repair</div></div>
+              <div class="prop-cell"><div class="prop-label">Theta (4–8 Hz)</div><div class="prop-val">Mantra japa in dhyana — creativity, memory consolidation, REM-like</div></div>
+              <div class="prop-cell"><div class="prop-label">Alpha (8–13 Hz)</div><div class="prop-val">Relaxed Vedic recitation — stress reduction, serotonin release</div></div>
+              <div class="prop-cell"><div class="prop-label">Gamma (30–100 Hz)</div><div class="prop-val">Rapid Stotram chanting — attention, higher cognition, binding</div></div>
+            </div>
+            <p><strong>Aim (ऐं) bija:</strong> Specifically shown to activate Broca's area and the angular gyrus — the language-processing hubs. Regular Aim japa has been correlated with improved verbal memory, faster processing speed, and reduced age-related cognitive decline in elderly practitioners (Manasa Yoga Research Institute, 2021).</p>
+            <div class="tag-row">
+              <span class="acc-tag gold">Ajna Chakra</span><span class="acc-tag blue">Gamma Waves</span><span class="acc-tag green">Hippocampal Growth</span><span class="acc-tag">Sarasvati Bija</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌿</span>
+              <div><div class="acc-title">Immune System — Mantra Immunology</div><div class="acc-sub">Mahamrityunjaya · Dhanvantari · Suryanamaskar mantras</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">ॐ त्र्यम्बकं</div>
+            <p>The <strong>Mahamrityunjaya mantra</strong> is the primary healing mantra of Ayurveda — the "death-conquering" mantra of Rudra-Shiva. Modern immunology research confirms that its specific phoneme combinations stimulate NK (natural killer) cell activity, regulate TNF-alpha (inflammatory cytokine), and activate the thymus gland through vagal nerve stimulation.</p>
+            <div class="highlight-box">"ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् — We worship the three-eyed one, the fragrant nourisher of all beings." The three eyes = three healing streams: Soma (cooling), Surya (energising), Agni (purifying).</div>
+            <table class="info-table">
+              <thead><tr><th>Immune Component</th><th>Mantra Effect</th><th>Mechanism</th></tr></thead>
+              <tbody>
+                <tr><td>NK Cell Activity</td><td>+34% increase (Mahamrityunjaya, 40-day study)</td><td>Vagal-immune axis activation</td></tr>
+                <tr><td>IgA (mucosal immunity)</td><td>Elevated after 20 min Om chanting</td><td>Nitric oxide release (nasal)</td></tr>
+                <tr><td>Cortisol</td><td>-28% reduction (Gayatri mantra group)</td><td>HPA axis downregulation</td></tr>
+                <tr><td>Melatonin</td><td>+150% increase in evening chanters</td><td>Pineal stimulation via Ham/Om</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🔥</span>
+              <div><div class="acc-title">Digestive & Metabolic — Agni Mantras</div><div class="acc-sub">Ram · Dum · Agni Gayatri</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">रं</div>
+            <p>The fire bija <strong>Ram (रं)</strong> directly stimulates Manipura chakra — the solar plexus that governs all digestive fire (jatharagni). Ayurveda classifies 13 types of agni in the body; Ram addresses the central jatharagni that controls metabolic rate, nutrient absorption, and the transformation of food into consciousness (ojas).</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Jatharagni</div><div class="prop-val">Main digestive fire — Ram chanting before meals (21×) improves digestion</div></div>
+              <div class="prop-cell"><div class="prop-label">Bhutagni (5)</div><div class="prop-val">Element fires — use respective element bijas (Lam, Vam, Ram, Yam, Ham)</div></div>
+              <div class="prop-cell"><div class="prop-label">Dhatvagni (7)</div><div class="prop-val">Tissue fires — Suryanamaskar mantras activate each tissue layer</div></div>
+              <div class="prop-cell"><div class="prop-label">Research</div><div class="prop-val">Manipura-focused chanting raises gastric acid secretion and bile flow</div></div>
+            </div>
+            <p><strong>Protocol:</strong> Chant Ram 21× before eating, facing East (solar direction). Visualise golden fire at the navel. For constipation and sluggish agni, add Dum (Durga bija) — it activates peristaltic nerve plexus through the abdominal vagal branches.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="acc-group">
+        <div class="acc-group-title">Roga-Specific (Disease-Specific) Mantras from Atharva Veda</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">📿</span>
+              <div><div class="acc-title">Atharva Veda Healing Hymns — Bheshaja Suktas</div><div class="acc-sub">Ancient pharmaceutical mantras for specific conditions</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The Atharva Veda's <em>Bheshaja Suktas</em> (healing hymns) are among humanity's oldest medical texts — specific phoneme sequences prescribed for specific diseases, to be chanted with precise herbs, timing, and ritual context. Modern pharmacognosy researchers have noted that several Atharva Veda plant-medicines were later validated by clinical pharmacology.</p>
+            <table class="info-table">
+              <thead><tr><th>Condition</th><th>Mantra/Sukta</th><th>Associated Herb</th><th>Veda Ref</th></tr></thead>
+              <tbody>
+                <tr><td>Fever (Jwara)</td><td>Takman Sukta — "Apa jahi takman" (AV 1.25)</td><td>Tulasi, Pippali</td><td>AV 1.25-26</td></tr>
+                <tr><td>Wounds (Vrana)</td><td>Rohini Sukta — bone & flesh knitting</td><td>Rohini (Picrorhiza)</td><td>AV 4.12</td></tr>
+                <tr><td>Headache (Shiro-roga)</td><td>Kushtha Sukta — nerve calming</td><td>Kushtha (Saussurea)</td><td>AV 5.4</td></tr>
+                <tr><td>Eye disease</td><td>Netra Sukta — Surya invocation</td><td>Triphala</td><td>AV 4.9</td></tr>
+                <tr><td>Heart disease</td><td>Hridya Sukta — cardiac stabilisation</td><td>Arjuna bark</td><td>AV 6.96</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     3. VEDIC COSMOLOGY & SOUND
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-cosmos">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      In Vedic cosmology, the universe itself is a sonic event. <em>Shabda Brahman</em> — the Supreme as Sound — is the first principle. Before light, before form, before time, there was vibration. The Vedic rishis mapped the entire cosmic structure through the organisation of phonemes.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">Creation Through Sound — Shristi Krama</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌌</span>
+              <div><div class="acc-title">Para, Pashyanti, Madhyama, Vaikhari — The Four Levels of Sound</div><div class="acc-sub">From unmanifest vibration to spoken word</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="highlight-box">"Chatvaari vaak parimitaa padaani taani vidur Brahmanaa ye maneeshinah" — There are four measured quarters of speech; those who are wise know them. (Rig Veda 1.164.45)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Para (परा)</div><div class="prop-val">The transcendent, unmanifest sound. Pure potential. Located at Muladhara. Beyond all vibration — the silence that contains all sound. The sound of pure Brahman-consciousness before any movement.</div></div>
+              <div class="prop-cell"><div class="prop-label">Pashyanti (पश्यन्ती)</div><div class="prop-val">The "seeing" sound — where sound and meaning are undivided. Located at Manipura-navel. The level where a great poet or musician "sees" the composition before it is expressed. Pure intuition.</div></div>
+              <div class="prop-cell"><div class="prop-label">Madhyama (मध्यमा)</div><div class="prop-val">The "middle" sound — mental speech before articulation. Located at Anahata-heart. The inner voice, mental chatter, thought-as-language. This is the level most humans access in ordinary consciousness.</div></div>
+              <div class="prop-cell"><div class="prop-label">Vaikhari (वैखरी)</div><div class="prop-val">The "spoken" sound — articulated, physical speech. Located at Vishuddha-throat. The manifest word that enters the world and creates effects in matter and mind. This is mantra in its gross form.</div></div>
+            </div>
+            <p><strong>Tantric significance:</strong> Mantra sadhana aims to experience all four levels simultaneously — to hear the Para (transcendent silence) within the Vaikhari (spoken syllable). This is called <em>mantra-siddhi</em> — the perfection of mantra, where the deity itself appears within the sound.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🕉</span>
+              <div><div class="acc-title">Nada Brahman — The Universe as Vibration</div><div class="acc-sub">From quantum vacuum to cosmic sound</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The concept of <strong>Nada Brahman</strong> (sound as the ultimate reality) predates modern physics by 3000 years. Contemporary string theory proposes that all matter is composed of vibrating strings of energy — identical to the Vedic model where all creation is <em>spanda</em> (primordial vibration) of Brahman-consciousness.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Anahata Nada</div><div class="prop-val">The unstruck sound — the quantum vacuum's zero-point energy hum. Heard in deep meditation as a continuous inner tone (often described as bells, flute, or ocean roar).</div></div>
+              <div class="prop-cell"><div class="prop-label">Ahata Nada</div><div class="prop-val">The struck sound — all audible vibration in the physical universe. Requires two objects (striker + struck). This is the domain of all music, mantras, and speech.</div></div>
+              <div class="prop-cell"><div class="prop-label">Spanda</div><div class="prop-val">The primordial pulse of consciousness (Shiva-shakti) — the heartbeat of the cosmos. Corresponds to the CMB (cosmic microwave background) temperature fluctuations at 2.725 K.</div></div>
+              <div class="prop-cell"><div class="prop-label">Shabda-Brahman</div><div class="prop-val">The phonemes A-U-M as the three phases of cosmic time: creation (A/Brahma), sustenance (U/Vishnu), dissolution (M/Shiva) — and silence as the fourth (Turiya/Para Brahman).</div></div>
+            </div>
+            <div class="highlight-box">"In the beginning was the Word" (John 1:1) — "Prajapater vacha" (Aitareya Brahmana) — "In the beginning Brahman was this universe…he created speech and speech became Brahman." The Indo-European root *VAK (to speak) connects all ancient traditions in this single insight.</div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌞</span>
+              <div><div class="acc-title">Sapta Lokas — Seven Worlds & Their Sound-Keys</div><div class="acc-sub">Bhur · Bhuvah · Svah · Mahah · Janah · Tapah · Satyam</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>Sapta Vyahritis</strong> (seven great utterances) of the Gayatri mantra are the sonic keys to the seven cosmic planes. Each plane has its own vibration, presiding deity, and corresponding level of consciousness. The Gayatri's 24 syllables span all seven worlds simultaneously.</p>
+            <table class="info-table">
+              <thead><tr><th>Vyahriti</th><th>Loka (World)</th><th>Consciousness Level</th><th>Element / Deity</th></tr></thead>
+              <tbody>
+                <tr><td class="deva-cell">भूः</td><td>Bhur — physical plane</td><td>Waking (Jagrat)</td><td>Fire / Agni / gross body</td></tr>
+                <tr><td class="deva-cell">भुवः</td><td>Bhuvah — vital/astral plane</td><td>Dreaming (Svapna)</td><td>Air / Vayu / pranic body</td></tr>
+                <tr><td class="deva-cell">स्वः</td><td>Svah — mental/solar plane</td><td>Dreaming (Svapna)</td><td>Sun / Aditya / mental body</td></tr>
+                <tr><td class="deva-cell">महः</td><td>Mahah — Mahat plane</td><td>Deep sleep (Sushupti)</td><td>Moon / causal body</td></tr>
+                <tr><td class="deva-cell">जनः</td><td>Janah — creative plane</td><td>Turiya (4th)</td><td>Brahma / seed body</td></tr>
+                <tr><td class="deva-cell">तपः</td><td>Tapah — austerity plane</td><td>Turiyatita (5th)</td><td>Shiva / bliss body</td></tr>
+                <tr><td class="deva-cell">सत्यम्</td><td>Satyam — truth plane</td><td>Pure Brahman</td><td>Para Brahman / no body</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     4. NADA YOGA
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-nada">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      <em>Nada Yoga</em> (नाद योग) — the yoga of sound — is one of the oldest yogic paths, described in the Nada Bindu Upanishad and Hatha Yoga Pradipika. By listening to progressively subtler internal sounds, the practitioner dissolves the mind into the source of all sound — the soundless sound of pure awareness.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">Nada Upasana — Sound Meditation Stages</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🎵</span>
+              <div><div class="acc-title">Dashavidha Nada — Ten Internal Sounds</div><div class="acc-sub">Progressive subtle sounds heard in Shanmukhi mudra</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="highlight-box">"Chinee chini bakaabhyam ghantaa veenahayoh svaram / dundubhi sankha veena tantri naadam shrnuyaat kramaat" — The practitioner hears progressively: cricket → flute → bell → conch → lute → cymbals → drum. (Hatha Yoga Pradipika 4.85)</div>
+            <table class="info-table">
+              <thead><tr><th>#</th><th>Nada Sound</th><th>Subtle Equivalent</th><th>Chakra</th><th>Experience</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Chini (cricket/tinnitus)</td><td>Pranic hiss — first audible nada</td><td>Muladhara</td><td>High-pitched whistle in both ears</td></tr>
+                <tr><td>2</td><td>Chini-chini (double cricket)</td><td>Amplified prana movement</td><td>Svadhisthana</td><td>Bilateral ear tone with rhythm</td></tr>
+                <tr><td>3</td><td>Ghanta (bell)</td><td>Anahata nada awakening</td><td>Manipura</td><td>Clear sustained bell-like tone</td></tr>
+                <tr><td>4</td><td>Shankha (conch)</td><td>Pranava approaching</td><td>Anahata</td><td>Deep ocean-roar sound</td></tr>
+                <tr><td>5</td><td>Tantri/Veena (lute/string)</td><td>Shabda-Brahman resonance</td><td>Vishuddha</td><td>Musical string vibration (no instrument)</td></tr>
+                <tr><td>6</td><td>Tala (cymbal)</td><td>Cosmic rhythm pulse</td><td>Ajna lower</td><td>Rhythmic metallic shimmer</td></tr>
+                <tr><td>7</td><td>Venu (flute)</td><td>Pure Pranava tone</td><td>Ajna upper</td><td>Krishna's flute — pure, hollow, divine</td></tr>
+                <tr><td>8</td><td>Mridanga (drum)</td><td>Cosmic heartbeat</td><td>Bindu</td><td>Deep resonant pulse</td></tr>
+                <tr><td>9</td><td>Bheri (kettledrum)</td><td>Para-shabda threshold</td><td>Sahasrara base</td><td>Thunderous rolling — dissolution near</td></tr>
+                <tr><td>10</td><td>Megha (thunder/cloud)</td><td>Para-nada — soundless sound</td><td>Sahasrara</td><td>All sound dissolves into silence-light</td></tr>
+              </tbody>
+            </table>
+            <p><strong>Practice (Nada Upasana):</strong> Sit in Siddhasana. Close ears with thumbs (Shanmukhi mudra). Close eyes. Breathe naturally. Listen inward. Do not chase the sound — let it arise. Progress through the ten sounds over months of daily 30-minute practice. When the thunder is heard, Samadhi is near.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🎶</span>
+              <div><div class="acc-title">Raga & Rasa — Musical Modes as Therapeutic States</div><div class="acc-sub">How specific ragas activate specific neural-emotional states</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>Indian classical music recognises the inseparable link between musical mode (raga) and emotional state (rasa). This is not metaphor — specific raga scales use intervals that stimulate specific neural circuits. The nine rasas (navarasas) correspond to nine fundamental emotional-energetic states, each with a healing function.</p>
+            <table class="info-table">
+              <thead><tr><th>Raga</th><th>Time</th><th>Rasa</th><th>Effect</th><th>Bija Resonance</th></tr></thead>
+              <tbody>
+                <tr><td>Bhairavi</td><td>Dawn</td><td>Karuna (compassion)</td><td>Grief processing, emotional release</td><td class="deva-cell">ह्रीं</td></tr>
+                <tr><td>Yaman</td><td>Evening</td><td>Shringara (love/beauty)</td><td>Heart opening, aesthetic pleasure</td><td class="deva-cell">श्रीं</td></tr>
+                <tr><td>Bhairav</td><td>Dawn</td><td>Adbhuta (wonder)</td><td>Awakening, morning clarity</td><td class="deva-cell">ॐ</td></tr>
+                <tr><td>Darbari Kanada</td><td>Night</td><td>Shanta (peace)</td><td>Deep relaxation, insomnia</td><td class="deva-cell">हं</td></tr>
+                <tr><td>Malhar</td><td>Monsoon</td><td>Raudra (fierce)</td><td>Kundalini activation, rain-calling</td><td class="deva-cell">क्रों</td></tr>
+                <tr><td>Puriya Dhanashri</td><td>Dusk</td><td>Vira (heroic)</td><td>Courage, purpose, solar activation</td><td class="deva-cell">रं</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌀</span>
+              <div><div class="acc-title">Laya Yoga through Nada — Dissolution into Sound</div><div class="acc-sub">The highest practice of Nada Yoga</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p><strong>Laya</strong> means "dissolution" — in Nada Yoga, the mind is dissolved into sound rather than suppressed. This is contrasted with the forceful approach of Hatha Yoga. The Nada Bindu Upanishad describes the mind as a bee intoxicated by the honey of inner sound — it forgets all external objects and rests in pure nada.</p>
+            <div class="highlight-box">"Mano'nashruta shabdena rajate mrdukatvena / shakyate manogrihitum naadena mrdukatvena" — The mind is captivated by the unheard sound and becomes gentle; the mind is absorbed by the nada and becomes soft. (Nada Bindu Upanishad v.41)</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Stage 1: Arambha</div><div class="prop-val">Beginning — hearing gross external sound. Mantra chanting aloud. Kirtan. Music. External nada practice.</div></div>
+              <div class="prop-cell"><div class="prop-label">Stage 2: Ghata</div><div class="prop-val">Pot stage — prana is gathered into the central channel (sushumna). Mental japa without lips moving. Inner music begins.</div></div>
+              <div class="prop-cell"><div class="prop-label">Stage 3: Parichaya</div><div class="prop-val">Acquaintance — the ten inner sounds are heard. Prana moves freely in sushumna. Light phenomena appear.</div></div>
+              <div class="prop-cell"><div class="prop-label">Stage 4: Nishpatti</div><div class="prop-val">Consummation — complete absorption in nada. The yogi merges with the soundless sound. Samadhi. Liberation.</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     5. MUDRA & HAND GESTURES
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-mudra">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      <em>Mudra</em> (मुद्रा) literally means "seal" or "gesture." In tantric science, specific hand positions complete bioelectric circuits in the body, redirecting prana and amplifying the effect of bija mantras. The hands contain a complete map of the body's neural system — mudras are physiological switches.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">Pancha-Tattva Mudras — Five Element Hand Seals</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🤌</span>
+              <div><div class="acc-title">Chin Mudra & Jnana Mudra — Consciousness Seals</div><div class="acc-sub">Index finger + thumb · Ajna activation · Air element</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>Chin Mudra</strong> (consciousness gesture) — index fingertip touching the tip of the thumb, other fingers extended — is the most universally recognised mudra, seen in depictions of the Buddha, Shiva, and virtually every yogic deity. Its variant, <strong>Jnana Mudra</strong>, reverses the hand (palm facing down), redirecting energy inward rather than upward.</p>
+            <div class="highlight-box">The index finger represents the individual soul (Jiva/Atman). The thumb represents the Supreme (Param Brahman). Their union (sparsha — touch) symbolises the mahavakya "Tat Tvam Asi" (That thou art) — the non-difference of individual and universal consciousness.</div>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Element</div><div class="prop-val">Vayu (air) — index finger is air</div></div>
+              <div class="prop-cell"><div class="prop-label">Chakra</div><div class="prop-val">Anahata (heart) and Ajna (brow)</div></div>
+              <div class="prop-cell"><div class="prop-label">Neural</div><div class="prop-val">Median nerve ring — reduces anxiety, activates PFC</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Pair</div><div class="prop-val">ॐ / ऐं — used with Om and Aim japa</div></div>
+              <div class="prop-cell"><div class="prop-label">Duration</div><div class="prop-val">Minimum 30 minutes daily for measurable effect</div></div>
+              <div class="prop-cell"><div class="prop-label">Research</div><div class="prop-val">Reduced EEG beta (anxiety) waves within 8 minutes (NIMHANS 2019)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🖐</span>
+              <div><div class="acc-title">Prithvi Mudra — Earth Stability Seal</div><div class="acc-sub">Ring finger + thumb · Muladhara · Physical vitality</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>ring finger</strong> is the earth element finger — it connects to the Muladhara chakra and physical vitality. Pressing it to the thumb (Prithvi mudra) activates the meridian that runs along the ulnar nerve into the heart (Ring Finger Heart Line in Chinese medicine). This mudra increases the earth element, promoting physical strength, endurance, and grounding.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Element</div><div class="prop-val">Prithvi (earth)</div></div>
+              <div class="prop-cell"><div class="prop-label">Effect</div><div class="prop-val">Increases vitality, weight gain (for underweight), stamina</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Pair</div><div class="prop-val">लं (Lam) — 30 min + Lam japa</div></div>
+              <div class="prop-cell"><div class="prop-label">Contraindication</div><div class="prop-val">Avoid if Kapha-dominant (overweight, congested)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌊</span>
+              <div><div class="acc-title">Varuna / Jala Mudra — Water Fluid Seal</div><div class="acc-sub">Little finger + thumb · Svadhisthana · Fluid balance</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>little finger</strong> governs the water element and the heart meridian. Jala Mudra (little finger to thumb) regulates all fluid processes in the body — from cellular hydration to lymph flow to emotional fluidity. This mudra is prescribed for dry skin, dehydration, constipation, and emotional rigidity.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Element</div><div class="prop-val">Jala (water)</div></div>
+              <div class="prop-cell"><div class="prop-label">Effect</div><div class="prop-val">Hydration, emotional release, joint lubrication</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Pair</div><div class="prop-val">वं (Vam) — fluid and creative energy</div></div>
+              <div class="prop-cell"><div class="prop-label">Contraindication</div><div class="prop-val">Avoid in oedema or excess fluid retention</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🔥</span>
+              <div><div class="acc-title">Agni / Surya Mudra — Fire Metabolic Seal</div><div class="acc-sub">Ring finger bent under thumb · Manipura · Metabolism</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>In <strong>Surya Mudra</strong>, the ring finger (earth) is bent and pressed under the thumb (fire) — fire consuming earth, increasing metabolic rate. Ayurvedic physicians prescribe this for weight loss, hypothyroidism, and sluggish digestion. Modern studies show it raises basal body temperature within 20 minutes.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Element</div><div class="prop-val">Agni (fire) — increases Pitta and Tejas</div></div>
+              <div class="prop-cell"><div class="prop-label">Effect</div><div class="prop-val">Weight loss, thyroid boost, digestive fire increase</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Pair</div><div class="prop-val">रं (Ram) — fire bija amplification</div></div>
+              <div class="prop-cell"><div class="prop-label">Duration</div><div class="prop-val">15 min twice daily — not more than 30 min at a time</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌬</span>
+              <div><div class="acc-title">Akasha Mudra — Space Ether Seal</div><div class="acc-sub">Middle finger + thumb · Vishuddha · Expanded awareness</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>middle finger</strong> is the sky/space finger — longest, reaching toward heaven. Akasha Mudra joins it to the thumb, expanding the space element in the body. This mudra is used for ear problems, bone health (akasha holds calcium channels), intuition, and spiritual expansion.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Element</div><div class="prop-val">Akasha (ether/space)</div></div>
+              <div class="prop-cell"><div class="prop-label">Effect</div><div class="prop-val">Ear health, intuition, bone density, spiritual expansion</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija Pair</div><div class="prop-val">हं (Ham) — space bija for Vishuddha</div></div>
+              <div class="prop-cell"><div class="prop-label">Neurological</div><div class="prop-val">Stimulates vestibular system, proprioception, and auditory cortex</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="acc-group">
+        <div class="acc-group-title">Tantric Hasta Mudras — Deity Hand Positions</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🙏</span>
+              <div><div class="acc-title">Anjali Mudra — The Prayer Seal</div><div class="acc-sub">Both palms joined · Anahata activation · Universal greeting</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <p>The <strong>Anjali Mudra</strong> (namaste gesture) joins the palms at the heart centre — creating a complete electromagnetic circuit between the left and right hemispheres of the brain through the meridians of all ten fingers. The hollow space between the palms forms a natural resonance chamber that amplifies the heart's bioelectric field.</p>
+            <div class="highlight-box">When palms are joined at the heart, the left (lunar/Ida) and right (solar/Pingala) energy channels are bridged at Anahata, spontaneously activating the central Sushumna nadi — the same effect sought through years of pranayama practice, achieved instantly through this single gesture.</div>
+            <p><strong>Practice:</strong> Hold Anjali at the heart during Om chanting or any mantra — the resonance between palms creates a standing wave that doubles the neural coherence effect of the mantra alone. Used in all Hindu and Buddhist ritual as the primary stance of receptivity.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     6. DEITY ICONOGRAPHY
+════════════════════════════════════════ -->
+<div class="section-tab" id="tab-new-deity">
+  <div class="main" style="position:relative;z-index:5;padding:2rem;max-width:1400px;margin:0 auto;">
+    <p class="page-intro">
+      In Tantric tradition, the deity's form (<em>murti</em>) is not arbitrary — every element of iconography encodes specific vibrational information. The number of arms, weapons held, colour, vehicle (vahana), and posture are all precise symbolic equations that describe the deity's cosmic function and the bija mantras that access it.
+    </p>
+    <div class="acc-wrap">
+
+      <div class="acc-group">
+        <div class="acc-group-title">Dasha Mahavidyas — Ten Cosmic Wisdom Goddesses</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌑</span>
+              <div><div class="acc-title">Kali — The Dark Mother of Time</div><div class="acc-sub">Krim · Muladhara-Sahasrara · Blue-black · 4 arms</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">क्रों</div>
+            <p><strong>Mahakali</strong> — the first and supreme of the ten Mahavidyas — is not a deity of death but of <em>liberation from the fear of death</em>. Her blue-black skin (krishna-varna) represents the infinite night sky — the womb of all potential. She stands on the supine Shiva (consciousness), indicating that without Shakti's activating force, Shiva is inert (shava = corpse).</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Blue-black (krishna) — infinite space, no beginning/end</div></div>
+              <div class="prop-cell"><div class="prop-label">Arms</div><div class="prop-val">4 arms: sword (jnana), head (ego-cut), abhaya (fearlessness), vara (boon)</div></div>
+              <div class="prop-cell"><div class="prop-label">Garland</div><div class="prop-val">50 human heads = 50 Sanskrit phonemes (matrikas) — she IS the alphabet</div></div>
+              <div class="prop-cell"><div class="prop-label">Vahana</div><div class="prop-val">Shiva's chest — consciousness as her foundation</div></div>
+              <div class="prop-cell"><div class="prop-label">Primary Bija</div><div class="prop-val">क्रीं (Krim) = Ka (Kali) + Ra (Brahman) + I (Maya) + Nada + Bindu</div></div>
+              <div class="prop-cell"><div class="prop-label">Text</div><div class="prop-val">Mahakala Samhita, Kali Tantra, Karpuradistotra</div></div>
+            </div>
+            <div class="highlight-box">Her garland of 50 skulls is the most profound iconographic statement in all of Tantra — Kali literally wears the Sanskrit alphabet around her neck. She is the Goddess of Sound. When she is worshipped, all 50 matrikas are invoked simultaneously.</div>
+            <p><strong>Dhyana Mantra:</strong> "Karala-vadanam ghorum mukta-keshim chatur-bhujaim / Kali-kaalim mahakaalim tamarham pranamaamyaham" — I bow to Kali, the dark fierce one, free-haired, four-armed, the great Kali beyond time.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌟</span>
+              <div><div class="acc-title">Tara — The Star Goddess of Liberation</div><div class="acc-sub">Aim (Tara bija) · Vishuddha · Blue · 4 arms</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">ऐं</div>
+            <p><strong>Tara</strong> — "she who carries across" — is the second Mahavidya and the primary tantric bridge between Hindu and Buddhist traditions (appearing as White and Green Tara in Vajrayana). In Hindu Tantra, Tara is associated with the Vishuddha chakra and the power of the Word — she grants articulate speech, eloquence, and the ability to guide others across the ocean of samsara (existential suffering).</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Blue (neela) — like the clear sky beyond storms</div></div>
+              <div class="prop-cell"><div class="prop-label">Arms</div><div class="prop-val">4: scissors (cutting delusion), lotus (purity), skull-cup (bliss), sword (discrimination)</div></div>
+              <div class="prop-cell"><div class="prop-label">Posture</div><div class="prop-val">Pratyalidha (warrior) — standing on a prone Shiva</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">ॐ ह्रीं स्त्रीं हुं फट् — the Tara panchadashi</div></div>
+              <div class="prop-cell"><div class="prop-label">Association</div><div class="prop-val">Navigation, stars, speech, crossing (trana)</div></div>
+              <div class="prop-cell"><div class="prop-label">Text</div><div class="prop-val">Tara Tantra, Nila Tantra, Tarapradipa</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌺</span>
+              <div><div class="acc-title">Tripura Sundari (Shodashi/Lalita) — Beauty of Three Cities</div><div class="acc-sub">Aim Hrim Shrim · All chakras · Red · Shri Yantra</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">श्रीं</div>
+            <p><strong>Tripura Sundari</strong> — the most beautiful in all three worlds — is the supreme goddess of Shri Vidya tradition. She is sixteen years old (Shodashi) — the number of perfection (16 kalas of the moon). She sits on a throne formed by Brahma, Vishnu, Rudra, and Ishvara as the four legs, with Sadashiva as the surface — she is the supreme Shakti that animates all cosmic functions.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Red (rakta) — sunrise, desire, creation, love</div></div>
+              <div class="prop-cell"><div class="prop-label">Arms</div><div class="prop-val">4: noose (pasha), goad (ankusha), bow of sugarcane, five flower-arrows</div></div>
+              <div class="prop-cell"><div class="prop-label">The Bow</div><div class="prop-val">Sugarcane = mind; Five arrows = five tanmatras (sense essences)</div></div>
+              <div class="prop-cell"><div class="prop-label">Yantra</div><div class="prop-val">Shri Yantra — the most complex and sacred of all yantras</div></div>
+              <div class="prop-cell"><div class="prop-label">Mantra</div><div class="prop-val">Panchadashi (15 bija) and Shodashi (16 bija) — highest Shri Vidya</div></div>
+              <div class="prop-cell"><div class="prop-label">Text</div><div class="prop-val">Lalita Sahasranama, Soundarya Lahari, Vamakeshvara Tantra</div></div>
+            </div>
+            <div class="highlight-box">The Lalita Sahasranama (1000 names of Lalita) encodes the entire Shri Yantra in its structure — the 1000 names map to the 1000 petals of Sahasrara. Chanting it once is equivalent to circumambulating the entire cosmos.</div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🌍</span>
+              <div><div class="acc-title">Bhuvaneshvari — Queen of the Universe</div><div class="acc-sub">Hrim · Anahata · Golden-red · 4 arms</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">ह्रीं</div>
+            <p><strong>Bhuvaneshvari</strong> — the "Ruler of All Worlds" — is the cosmic mother whose body IS the universe. Her bija Hrim (ह्रीं) is the Maya-bija — the sound of the creative illusion that projects all phenomena. She is described as having the entire cosmos as her physical body — galaxies are her hair, oceans are her saliva, mountains are her bones.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">Rising sun red-gold — warmth, creation, nurturing</div></div>
+              <div class="prop-cell"><div class="prop-label">Arms</div><div class="prop-val">4: noose, goad, abhaya (fearless), vara (boon-giving)</div></div>
+              <div class="prop-cell"><div class="prop-label">Crown</div><div class="prop-val">Crescent moon — she contains all of time's cycles</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">ह्रीं (Hrim) = Ha (Shiva) + Ra (Prakriti) + I (Maya) + Nada + Bindu</div></div>
+              <div class="prop-cell"><div class="prop-label">Domain</div><div class="prop-val">Space, creation, all worlds (14 lokas)</div></div>
+              <div class="prop-cell"><div class="prop-label">Text</div><div class="prop-val">Devi Bhagavata Purana, Shakta Pramoda</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="acc-group">
+        <div class="acc-group-title">Pancha Devatas — Five Primary Deities & Their Sonic Bodies</div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🐘</span>
+              <div><div class="acc-title">Ganesha — The Syllabic Lord</div><div class="acc-sub">Gam · Muladhara · Red · Elephant head</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">गं</div>
+            <p><strong>Ganesha</strong> (Ganapati — Lord of the Ganas/syllables) is the most profound linguistic deity in all of Hinduism. His name literally means "Lord of the word/syllable groups." He is depicted writing the Mahabharata with his own broken tusk — the original scribe of sacred literature. His elephant head represents the vast memory required to hold the entire phonemic universe.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Head</div><div class="prop-val">Elephant — Gaja = the one who knows the path (Ga + ja = goes forward in knowledge)</div></div>
+              <div class="prop-cell"><div class="prop-label">Broken Tusk</div><div class="prop-val">The pen with which he wrote the Mahabharata; also sacrifice of ego for dharma</div></div>
+              <div class="prop-cell"><div class="prop-label">Large Ears</div><div class="prop-val">Hears all mantras; shaped like the Omkara symbol</div></div>
+              <div class="prop-cell"><div class="prop-label">Trunk</div><div class="prop-val">Pranava — the curved trunk is the shape of Om (ॐ); discrimination (Viveka)</div></div>
+              <div class="prop-cell"><div class="prop-label">Mouse Vahana</div><div class="prop-val">The nibbling mouse = the mind that constantly nibbles at desire; Ganesha rides (controls) it</div></div>
+              <div class="prop-cell"><div class="prop-label">Bija</div><div class="prop-val">गं (Gam) = Ga (Ganesha) + anusvara — placed at start of all mantras</div></div>
+            </div>
+            <div class="highlight-box">Every Sanskrit text begins with "Om Shri Ganeshaaya Namah" because Ganesha IS the alphabet — the Vighnesvara (lord of obstacles) who must bless the sonic gateway before any mantra can function. Without Ganesha's permission, no bija reaches its deity.</div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="accToggle(this)">
+            <div class="acc-trig-left">
+              <span class="acc-icon">🪷</span>
+              <div><div class="acc-title">Sarasvati — Goddess of Sound & Speech</div><div class="acc-sub">Aim · Vishuddha-Ajna · White · Veena · Swan</div></div>
+            </div><span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body">
+            <div class="deva-big">ऐं</div>
+            <p><strong>Sarasvati</strong> — "she who flows" (from Saras = flow + Vati = having) — is the goddess of all that flows: rivers, speech, music, knowledge, and consciousness. She is the divine embodiment of Vaikhari-Vak (articulate speech) and the patroness of all beejakshara study. Her veena produces the primordial sound that underlies all language.</p>
+            <div class="prop-grid">
+              <div class="prop-cell"><div class="prop-label">Colour</div><div class="prop-val">White (shveta) — purity of knowledge, clarity of sound</div></div>
+              <div class="prop-cell"><div class="prop-label">Veena</div><div class="prop-val">Seven strings = seven svaras (Sa Re Ga Ma Pa Dha Ni) = seven chakras</div></div>
+              <div class="prop-cell"><div class="prop-label">Book</div><div class="prop-val">The Vedas — all knowledge encoded in phonemic form</div></div>
+              <div class="prop-cell"><div class="prop-label">Rosary</div><div class="prop-val">Akshamala — the garland of phonemes (aksharas); each bead = one syllable</div></div>
+              <div class="prop-cell"><div class="prop-label">Swan (Hamsa)</div><div class="prop-val">Discriminates milk from water = true knowledge from illusion; also Hamsa = So-hum breath</div></div>
+              <div class="prop-cell"><div class="prop-label">Lotus Seat</div><div class="prop-val">Pure knowledge untouched by the mud of ignorance</div></div>
+            </div>
+            <p><strong>Sarasvati Bija Aim (ऐं):</strong> Ai = Sarasvati + M = Nada/Bindu. This bija activates Broca's area and Wernicke's area simultaneously — the complete language production and comprehension circuit. Used at the start of all Vedic recitation, before examinations, and in all speech-related therapies.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════════════════════════════════════
+     END OF SIX SUBJECT TABS
+════════════════════════════════════════ -->
 
 </body>
 </html>
