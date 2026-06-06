@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beejakshara & Matrika Vidya — Sacred Sound Science</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+Devanagari:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c8a84b;
+    --gold-light: #e8c96a;
+    --gold-dark: #8a6a1a;
+    --deep: #0a0608;
+    --surface: #120d10;
+    --surface2: #1e1520;
+    --surface3: #2a1e2a;
+    --text: #f0e8d8;
+    --text-muted: #a89880;
+    --red: #c84848;
+    --blue: #4878c8;
+    --green: #48a878;
+    --amber: #c8880a;
+    --border: rgba(200,168,75,0.2);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Mandala BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: 
+      radial-gradient(ellipse at 50% 0%, rgba(200,168,75,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(72,48,120,0.12) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .mandala-bg {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 800px; height: 800px;
+    opacity: 0.03; pointer-events: none; z-index: 0;
+    animation: rotateSlow 120s linear infinite;
+  }
+  @keyframes rotateSlow { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .om-symbol {
+    font-size: 4rem; color: var(--gold);
+    display: block; margin-bottom: 0.5rem;
+    text-shadow: 0 0 40px rgba(200,168,75,0.4);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+  }
+  .subtitle {
+    font-size: 1rem; color: var(--text-muted);
+    font-style: italic; margin-top: 0.5rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .devanagari-title {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 1.1rem; color: var(--gold-light);
+    margin-top: 0.5rem; opacity: 0.8;
+  }
+
+  /* API Key Bar */
+  .api-bar {
+    position: relative; z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    justify-content: center;
+  }
+  .api-bar label { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; }
+  .api-bar input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    width: 320px;
+    font-family: monospace;
+  }
+  .api-bar input:focus { outline: 1px solid var(--gold); }
+  .api-status { font-size: 0.8rem; }
+  .api-status.ok { color: var(--green); }
+  .api-status.err { color: var(--red); }
+  .btn-small {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Cormorant Garamond', serif;
+    transition: all 0.2s;
+  }
+  .btn-small:hover { background: var(--gold); color: var(--deep); }
+
+  /* Nav Tabs */
+  .nav-tabs {
+    position: relative; z-index: 10;
+    display: flex; gap: 0; overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 2rem;
+  }
+  .tab-btn {
+    background: transparent; border: none;
+    color: var(--text-muted);
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* Main Layout */
+  .main { position: relative; z-index: 5; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+
+  /* Grid of Beeja Cards */
+  .beeja-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .beeja-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .beeja-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top left, rgba(200,168,75,0.05), transparent 70%);
+    pointer-events: none;
+  }
+  .beeja-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(200,168,75,0.1);
+  }
+  .beeja-card.analyzed { border-color: rgba(72,168,120,0.4); }
+  .beeja-akshar {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 2.5rem; color: var(--gold);
+    line-height: 1; margin-bottom: 0.5rem;
+    text-shadow: 0 0 20px rgba(200,168,75,0.3);
+  }
+  .beeja-roman { font-size: 1.1rem; color: var(--gold-light); font-style: italic; margin-bottom: 0.5rem; }
+  .beeja-type-badge {
+    display: inline-block;
+    font-size: 0.7rem; padding: 2px 8px;
+    border-radius: 20px; margin-bottom: 0.75rem;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 0.05em;
+  }
+  .badge-vowel { background: rgba(200,168,75,0.15); color: var(--gold); border: 1px solid rgba(200,168,75,0.3); }
+  .badge-consonant { background: rgba(72,120,200,0.15); color: #78a8ff; border: 1px solid rgba(72,120,200,0.3); }
+  .badge-special { background: rgba(200,72,72,0.15); color: #ff9898; border: 1px solid rgba(200,72,72,0.3); }
+  .badge-beeja { background: rgba(72,168,120,0.15); color: #78e8b0; border: 1px solid rgba(72,168,120,0.3); }
+
+  .beeja-short-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+  .analyze-btn {
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: 'Cormorant Garamond', serif;
+    transition: all 0.2s; width: 100%;
+  }
+  .analyze-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .analyzing-spinner { display: inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Analysis Panel */
+  .analysis-panel {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    padding: 2rem;
+    overflow-y: auto;
+  }
+  .analysis-panel.open { display: flex; align-items: flex-start; justify-content: center; }
+  .analysis-inner {
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    max-width: 860px; width: 100%;
+    padding: 2.5rem;
+    position: relative;
+    animation: slideUp 0.3s ease;
+    margin: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .close-btn {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: transparent; border: none;
+    color: var(--text-muted); font-size: 1.5rem;
+    cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .close-btn:hover { color: var(--gold); }
+  .analysis-header { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .analysis-akshar { font-family: 'Noto Sans Devanagari', sans-serif; font-size: 4rem; color: var(--gold); }
+  .analysis-name { font-size: 1.5rem; color: var(--text); font-style: italic; }
+
+  .analysis-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+  @media (max-width: 600px) { .analysis-sections { grid-template-columns: 1fr; } }
+  .analysis-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .analysis-section.full { grid-column: 1 / -1; }
+  .section-icon { font-size: 1.2rem; margin-bottom: 0.4rem; }
+  .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.75rem; }
+  .section-body { font-size: 0.95rem; line-height: 1.7; color: var(--text-muted); }
+  .section-body strong { color: var(--text); }
+
+  /* Frequency bar */
+  .freq-bar-wrap { margin-top: 0.5rem; }
+  .freq-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+  .freq-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .freq-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); transition: width 1s ease; }
+
+  /* Chakra dots */
+  .chakra-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.5rem; }
+  .chakra-dot {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; color: var(--text-muted);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Search / Filter Bar */
+  .filter-bar {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    align-items: center; margin-bottom: 1.5rem;
+  }
+  .filter-bar input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text); padding: 0.5rem 1rem;
+    border-radius: 4px; font-size: 0.9rem;
+    flex: 1; min-width: 200px;
+  }
+  .filter-bar input:focus { outline: 1px solid var(--gold); }
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text); padding: 0.5rem 1rem;
+    border-radius: 4px; font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  /* About Tab */
+  .about-content { max-width: 800px; margin: 0 auto; }
+  .about-content h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold); font-size: 1.3rem;
+    margin: 2rem 0 1rem;
+  }
+  .about-content p { line-height: 1.8; color: var(--text-muted); margin-bottom: 1rem; font-size: 1.05rem; }
+  .about-content .highlight {
+    background: var(--surface2); border-left: 3px solid var(--gold);
+    padding: 1rem 1.5rem; border-radius: 0 8px 8px 0;
+    margin: 1.5rem 0; font-style: italic; color: var(--text);
+  }
+
+  /* Matrika Table Tab */
+  .matrika-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  .matrika-table th {
+    background: var(--surface2);
+    color: var(--gold); font-weight: 400;
+    letter-spacing: 0.05em; font-size: 0.8rem;
+    padding: 0.75rem 1rem; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .matrika-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(200,168,75,0.08);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  .matrika-table tr:hover td { background: var(--surface2); }
+  .matrika-table .deva { font-family: 'Noto Sans Devanagari', sans-serif; color: var(--gold); font-size: 1.2rem; }
+
+  /* Loader */
+  .loader-text { color: var(--text-muted); font-style: italic; font-size: 0.95rem; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 0.75rem 1.5rem;
+    border-radius: 8px; font-size: 0.9rem;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.error { border-color: var(--red); color: #ff9898; }
+
+  .section-tab { display: none; }
+  .section-tab.active { display: block; }
+
+  .page-intro {
+    font-size: 1.05rem; color: var(--text-muted);
+    line-height: 1.8; margin-bottom: 1.5rem;
+    max-width: 800px;
+  }
+  .btn-analyze-all {
+    background: var(--gold);
+    color: var(--deep);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+  }
+  .btn-analyze-all:hover { background: var(--gold-light); }
+</style>
+</head>
+<body>
+
+<!-- Mandala background SVG -->
+<svg class="mandala-bg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(400,400)">
+    <circle r="380" fill="none" stroke="#c8a84b" stroke-width="1"/>
+    <circle r="300" fill="none" stroke="#c8a84b" stroke-width="0.5"/>
+    <circle r="220" fill="none" stroke="#c8a84b" stroke-width="1"/>
+    <circle r="140" fill="none" stroke="#c8a84b" stroke-width="0.5"/>
+    <circle r="60" fill="none" stroke="#c8a84b" stroke-width="1"/>
+    <script>
+    </script>
+  </g>
+  <g id="petals" transform="translate(400,400)">
+    <line x1="0" y1="-380" x2="0" y2="380" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="-380" y1="0" x2="380" y2="0" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="-268" y1="-268" x2="268" y2="268" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="268" y1="-268" x2="-268" y2="268" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="-145" y1="-355" x2="145" y2="355" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="145" y1="-355" x2="-145" y2="355" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="-355" y1="-145" x2="355" y2="145" stroke="#c8a84b" stroke-width="0.3"/>
+    <line x1="355" y1="-145" x2="-355" y2="145" stroke="#c8a84b" stroke-width="0.3"/>
+  </g>
+</svg>
+
+<header>
+  <span class="om-symbol">ॐ</span>
+  <h1>Beejakshara & Matrika Vidya</h1>
+  <div class="devanagari-title">बीजाक्षर • मातृका • नाद विज्ञान</div>
+  <p class="subtitle">Sacred Sound Science — Neuroacoustic & Spiritual Analysis</p>
+</header>
+
+<!-- API Key Bar -->
+<div class="api-bar">
+  <label for="apiKey">🔑 Google Gemini API Key:</label>
+  <input type="password" id="apiKey" placeholder="AIza... (stays in your browser only)" />
+  <button class="btn-small" onclick="validateKey()">Connect</button>
+  <span class="api-status" id="apiStatus"></span>
+  <span style="font-size:0.75rem; color: var(--text-muted);">Free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold);">aistudio.google.com</a></span>
+</div>
+
+<!-- Tabs -->
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('beeja')">Beejakshara</button>
+  <button class="tab-btn" onclick="switchTab('matrika')">Matrika Table</button>
+  <button class="tab-btn" onclick="switchTab('tantra')">Tantric Beejas</button>
+  <button class="tab-btn" onclick="switchTab('neuro')">Neuroacoustics</button>
+  <button class="tab-btn" onclick="switchTab('about')">About & Science</button>
+</div>
+
+<div class="main">
+
+  <!-- BEEJA TAB -->
+  <div class="section-tab active" id="tab-beeja">
+    <p class="page-intro">
+      The Sanskrit alphabet is not merely a linguistic system — each syllable is a <em>beejakshara</em> (seed sound), a vibrational key to specific energetic, neurological, and cosmic states. Click any card to get a deep AI-powered analysis using Google Gemini.
+    </p>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search aksharas..." oninput="filterCards()">
+      <select class="filter-select" id="typeFilter" onchange="filterCards()">
+        <option value="all">All Types</option>
+        <option value="vowel">Vowels (Svaras)</option>
+        <option value="consonant">Consonants (Vyanjanas)</option>
+        <option value="special">Special</option>
+        <option value="beeja">Tantric Beejas</option>
+      </select>
+    </div>
+    <div class="beeja-grid" id="beejaGrid"></div>
+  </div>
+
+  <!-- MATRIKA TABLE TAB -->
+  <div class="section-tab" id="tab-matrika">
+    <p class="page-intro">
+      The <em>Matrikas</em> (मातृकाः) are the 50 divine mothers — the primordial forms of each Sanskrit phoneme. From <em>Akshara Upanishad</em> and <em>Prapanchasara Tantra</em>, each Matrika governs a specific tattva, deity, chakra, and energetic function.
+    </p>
+    <div style="overflow-x:auto;">
+      <table class="matrika-table" id="matrikaTable"></table>
+    </div>
+  </div>
+
+  <!-- TANTRIC BEEJAS TAB -->
+  <div class="section-tab" id="tab-tantra">
+    <p class="page-intro">
+      Tantric Beejas are monosyllabic power-sounds (shakti-syllables) used in mantra sadhana. Each is a compressed vibrational formula encoding a deity's essence, yantra force, and psychophysical effect.
+    </p>
+    <div class="beeja-grid" id="tantricGrid"></div>
+  </div>
+
+  <!-- NEUROACOUSTICS TAB -->
+  <div class="section-tab" id="tab-neuro">
+    <div class="about-content">
+      <h2>Neuroacoustic Science of Sanskrit</h2>
+      <div class="highlight">
+        "The human nervous system is itself an acoustic instrument. Sanskrit phonemes were engineered — through millennia of yogic observation — to stimulate specific neural circuits, endocrine responses, and brainwave states."
+      </div>
+      <div id="neuroContent"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT TAB -->
+  <div class="section-tab" id="tab-about">
+    <div class="about-content">
+      <h2>What are Beejakshara?</h2>
+      <p>
+        <em>Beejakshara</em> (बीजाक्षर) literally means "seed syllable." In the Shakta and Shaiva tantric traditions, every Sanskrit phoneme is considered a living vibrational seed that, when pronounced correctly, activates specific energy centers, neurological pathways, and states of consciousness.
+      </p>
+      <div class="highlight">
+        अकारादिक्षकारान्तवर्णजातकलेवरम् — "The body is constituted by the phonemes from A to Ksha." (Akshamala Upanishad)
+      </div>
+      <h2>The Matrika System</h2>
+      <p>The 50 Matrikas correspond to the 50 petals of the six chakras in the spinal system: Muladhara (4), Svadhisthana (6), Manipura (10), Anahata (12), Vishuddha (16), and Ajna (2) — plus the 1000-petalled Sahasrara representing all possible sound combinations.</p>
+      <h2>Scientific Correlates</h2>
+      <p>Modern research in phonetics, neuroscience, and psychoacoustics corroborates what ancient rishis discovered: specific phoneme articulations stimulate the vagus nerve, modulate the default mode network, alter HRV (heart rate variability), and produce measurable changes in cortisol and serotonin levels.</p>
+      <h2>From the Akshamala Upanishad</h2>
+      <p>The text describes each bead of the akshamala (rosary) as a phonemic body — with a head (mukha = Sarasvati), tail (puccha = Gayatri), hollow (sushira = Vidya), and knot (granthi = Prakriti). The inner thread is Brahman; the right thread is Shaiva; the left is Vaishnava.</p>
+      <div class="highlight">
+        ओमङ्कार मृत्युञ्जय सर्वव्यापक — "Om-A-kara: the Mrityunjaya, the all-pervading" — assigned to the first bead, governing mortality transcendence and omnipresence.
+      </div>
+      <p>Use the Beejakshara tab and enter your Gemini API key to receive deep, personalized AI analysis of each sacred syllable.</p>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- Analysis Panel -->
+<div class="analysis-panel" id="analysisPanel">
+  <div class="analysis-inner">
+    <button class="close-btn" onclick="closePanel()">✕</button>
+    <div class="analysis-header">
+      <div style="display:flex; align-items:flex-end; gap:1rem;">
+        <span class="analysis-akshar" id="panelAkshar"></span>
+        <div>
+          <div class="analysis-name" id="panelName"></div>
+          <div id="panelBadge" style="margin-top:4px;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="panelContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BEEJAS = [
+  // Vowels
+  {deva:'अ', roman:'A', type:'vowel', chakra:'Muladhara', color:'#c84848', freq:'256 Hz', tattva:'Prithvi', deity:'Brahma', desc:'First sound of creation, pure existence, Brahman consciousness'},
+  {deva:'आ', roman:'Aa', type:'vowel', chakra:'Muladhara', color:'#c84848', freq:'288 Hz', tattva:'Prithvi', deity:'Sarasvati', desc:'Expansion, receptivity, divine feminine opening'},
+  {deva:'इ', roman:'I', type:'vowel', chakra:'Svadhisthana', color:'#c87848', freq:'320 Hz', tattva:'Jala', deity:'Vishnu', desc:'Vitality, attraction, swift movement of prana'},
+  {deva:'ई', roman:'Ii', type:'vowel', chakra:'Svadhisthana', color:'#c87848', freq:'341 Hz', tattva:'Jala', deity:'Lakshmi', desc:'Sustained vitality, abundance, divine grace'},
+  {deva:'उ', roman:'U', type:'vowel', chakra:'Manipura', color:'#c8a84b', freq:'384 Hz', tattva:'Agni', deity:'Rudra', desc:'Solar power, transformation, ego dissolution'},
+  {deva:'ऊ', roman:'Uu', type:'vowel', chakra:'Manipura', color:'#c8a84b', freq:'432 Hz', tattva:'Agni', deity:'Gauri', desc:'Deep solar force, sustained transformation'},
+  {deva:'ऋ', roman:'Ri', type:'vowel', chakra:'Anahata', color:'#48c878', freq:'480 Hz', tattva:'Vayu', deity:'Kshetrapala', desc:'Rhythmic flow, prosperity, cosmic rhythm (Rik Veda root)'},
+  {deva:'ॠ', roman:'Rii', type:'vowel', chakra:'Anahata', color:'#48c878', freq:'512 Hz', tattva:'Vayu', deity:'Kshetrapali', desc:'Extended rhythm, deep harmonic resonance'},
+  {deva:'लृ', roman:'Lri', type:'vowel', chakra:'Vishuddha', color:'#4878c8', freq:'540 Hz', tattva:'Akasha', deity:'Indra', desc:'Rare sound of earth-dissolution, bridging gross and subtle'},
+  {deva:'ए', roman:'E', type:'vowel', chakra:'Ajna', color:'#9848c8', freq:'576 Hz', tattva:'Mahat', deity:'Shiva', desc:'Bindu consciousness, vision, divine perception'},
+  {deva:'ऐ', roman:'Ai', type:'vowel', chakra:'Ajna', color:'#9848c8', freq:'612 Hz', tattva:'Mahat', deity:'Shakti', desc:'Power of speech and command, Sarasvati\'s force'},
+  {deva:'ओ', roman:'O', type:'vowel', chakra:'Sahasrara', color:'#c848c8', freq:'648 Hz', tattva:'Para', deity:'Vishnu', desc:'Pranava seed, sustaining force, cosmic preservation'},
+  {deva:'औ', roman:'Au', type:'vowel', chakra:'Sahasrara', color:'#c848c8', freq:'720 Hz', tattva:'Para', deity:'Vayu', desc:'Combined solar-lunar force, expansive liberation'},
+  {deva:'अं', roman:'Am (Anusvara)', type:'special', chakra:'All', color:'#c8a84b', freq:'136 Hz (OM base)', tattva:'Bindu', deity:'Shiva-Shakti', desc:'The nasal resonance — bindu point, all-pervasive hum'},
+  {deva:'अः', roman:'Ah (Visarga)', type:'special', chakra:'All', color:'#c8a84b', freq:'—', tattva:'Visarga Shakti', deity:'Para Brahman', desc:'The breathed release — visarga, cosmic exhalation, liberation'},
+  // Consonants (selection)
+  {deva:'क', roman:'Ka', type:'consonant', chakra:'Ajna', color:'#4878c8', freq:'256 Hz', tattva:'Space-Fire', deity:'Indra', desc:'Kaula, the cleft, creative explosion, kama-bija root'},
+  {deva:'ख', roman:'Kha', type:'consonant', chakra:'Vishuddha', color:'#4878c8', freq:'270 Hz', tattva:'Akasha', deity:'Brahma', desc:'Sky/void, emptiness as totality, kha = zero point'},
+  {deva:'ग', roman:'Ga', type:'consonant', chakra:'Muladhara', color:'#c84848', freq:'288 Hz', tattva:'Prithvi', deity:'Ganesha', desc:'Gam-bija of Ganesha, grounding, obstacle removal'},
+  {deva:'घ', roman:'Gha', type:'consonant', chakra:'Muladhara', color:'#c84848', freq:'307 Hz', tattva:'Prithvi', deity:'Ganesha', desc:'Dense earth force, manifestation, heavy grounding'},
+  {deva:'च', roman:'Cha', type:'consonant', chakra:'Svadhisthana', color:'#c87848', freq:'320 Hz', tattva:'Jala', deity:'Brahmi', desc:'Motion, consciousness-spark, the moving prana'},
+  {deva:'ज', roman:'Ja', type:'consonant', chakra:'Anahata', color:'#48c878', freq:'341 Hz', tattva:'Vayu', deity:'Indrani', desc:'Birth, generation, Aim-bija root, Sarasvati\'s heart'},
+  {deva:'ट', roman:'Ta (retroflex)', type:'consonant', chakra:'Manipura', color:'#c8a84b', freq:'360 Hz', tattva:'Agni', deity:'Skanda', desc:'Hard retroflex — warrior force, solar strength, tapas'},
+  {deva:'त', roman:'Ta (dental)', type:'consonant', chakra:'Anahata', color:'#48c878', freq:'384 Hz', tattva:'Vayu', deity:'Yama', desc:'Dharmic force, law of truth, tara-bija root'},
+  {deva:'द', roman:'Da', type:'consonant', chakra:'Svadhisthana', color:'#c87848', freq:'405 Hz', tattva:'Jala', deity:'Varuna', desc:'Gift, giving, dakshina energy, generosity current'},
+  {deva:'न', roman:'Na', type:'consonant', chakra:'Ajna', color:'#9848c8', freq:'432 Hz', tattva:'Mind', deity:'Kubera', desc:'Negation-transcendence, nada root, the inner sound current'},
+  {deva:'प', roman:'Pa', type:'consonant', chakra:'Muladhara', color:'#c84848', freq:'480 Hz', tattva:'Prithvi', deity:'Vayu', desc:'Prana-seed, breath activation, life-force ignition'},
+  {deva:'ब', roman:'Ba', type:'consonant', chakra:'Svadhisthana', color:'#c87848', freq:'512 Hz', tattva:'Jala', deity:'Brahma', desc:'Beeja of Brahma, generation, the womb sound'},
+  {deva:'म', roman:'Ma', type:'consonant', chakra:'Ajna', color:'#9848c8', freq:'540 Hz', tattva:'Manas', deity:'Vishnu-Maya', desc:'Maya-bija, mind, the binding force, Om\'s M-component'},
+  {deva:'य', roman:'Ya', type:'consonant', chakra:'Anahata', color:'#48c878', freq:'576 Hz', tattva:'Vayu', deity:'Yama/Vayu', desc:'Yam-bija of Vayu, heart-space, air element activation'},
+  {deva:'र', roman:'Ra', type:'consonant', chakra:'Manipura', color:'#c8a84b', freq:'612 Hz', tattva:'Agni', deity:'Agni', desc:'Ram-bija of Agni, fire element, purification, radiance'},
+  {deva:'ल', roman:'La', type:'consonant', chakra:'Muladhara', color:'#c84848', freq:'648 Hz', tattva:'Prithvi', deity:'Indra', desc:'Lam-bija of Prithvi, earth, stability, physical grounding'},
+  {deva:'व', roman:'Va', type:'consonant', chakra:'Svadhisthana', color:'#c87848', freq:'720 Hz', tattva:'Jala', deity:'Varuna', desc:'Vam-bija of Jala, water, flow, emotional purification'},
+  {deva:'श', roman:'Sha (palatal)', type:'consonant', chakra:'Vishuddha', color:'#4878c8', freq:'756 Hz', tattva:'Akasha', deity:'Lakshmi', desc:'Shrim-root, auspiciousness, Lakshmi resonance, peace'},
+  {deva:'ष', roman:'Sha (retroflex)', type:'consonant', chakra:'Ajna', color:'#9848c8', freq:'810 Hz', tattva:'Mind', deity:'Skanda', desc:'Warrior Shakti, Shadakshari root, fierce protection'},
+  {deva:'स', roman:'Sa', type:'consonant', chakra:'Sahasrara', color:'#c848c8', freq:'864 Hz', tattva:'Para', deity:'Para Brahman', desc:'So-hum root, breath of being, That-I-am consciousness'},
+  {deva:'ह', roman:'Ha', type:'consonant', chakra:'Ajna', color:'#9848c8', freq:'960 Hz', tattva:'Akasha', deity:'Shiva', desc:'Ham-bija of Akasha, Hamsa pranava, cosmic breath'},
+  {deva:'क्ष', roman:'Ksha', type:'consonant', chakra:'Ajna', color:'#9848c8', freq:'1024 Hz', tattva:'Mahat', deity:'Vishvamitra', desc:'Final akshar, ksha=dissolution of ka, the last threshold of sound'}
+];
+
+const TANTRIC_BEEJAS = [
+  {deva:'ॐ', roman:'Om', type:'beeja', chakra:'Sahasrara', deity:'Para Brahman', desc:'Pranava — the primordial sound, comprising A+U+M+Silence. The master bija encompassing all creation, sustenance, and dissolution.', freq:'136.1 Hz (OM frequency)', effect:'Activates prefrontal cortex, synchronizes brain hemispheres, releases nitric oxide'},
+  {deva:'ऐं', roman:'Aim', type:'beeja', chakra:'Ajna', deity:'Sarasvati', desc:'Vagbhava bija — seed of speech, knowledge, and creative intelligence. Activates the throat-brow axis.', freq:'~320-400 Hz', effect:'Stimulates Broca\'s area, enhances verbal memory, improves concentration'},
+  {deva:'ह्रीं', roman:'Hrim', type:'beeja', chakra:'Anahata', deity:'Bhuvaneshvari', desc:'Maya bija — the primordial space-energy, combining Ha(Shiva)+Ra(Agni)+I(Maya)+Nada+Bindu. Heart of creation.', freq:'~528 Hz (repair frequency)', effect:'Vagal toning, heart coherence, DNA resonance studies'},
+  {deva:'श्रीं', roman:'Shrim', type:'beeja', chakra:'Anahata', deity:'Lakshmi', desc:'Lakshmi bija — abundance, auspiciousness, beauty. Sha(Lakshmi)+Ra(wealth)+I(manifestation)+Nada+Bindu.', freq:'~417 Hz', effect:'Parasympathetic activation, abundance mindset, serotonin modulation'},
+  {deva:'क्लीं', roman:'Klim', type:'beeja', chakra:'Svadhisthana', deity:'Krishna/Kama', desc:'Kama bija — desire, attraction, creative force. Ka(Kama)+La(Indra)+I(satisfaction)+Nada+Bindu.', freq:'~285 Hz', effect:'Limbic system activation, dopamine pathway stimulation'},
+  {deva:'दुं', roman:'Dum', type:'beeja', chakra:'Manipura', deity:'Durga', desc:'Durga bija — protective force, invincibility, fierce compassion. Activates solar plexus warrior energy.', freq:'~396 Hz', effect:'Adrenal regulation, courage response, fight-or-flight override'},
+  {deva:'गं', roman:'Gam', type:'beeja', chakra:'Muladhara', deity:'Ganesha', desc:'Ganapati bija — obstacle removal, new beginnings, wisdom. Ga(Ganesha)+Nada+Bindu.', freq:'~256 Hz', effect:'Root grounding, nervous system stabilization, gamma brainwave induction'},
+  {deva:'हं', roman:'Ham', type:'beeja', chakra:'Vishuddha', deity:'Sadashiva', desc:'Akasha bija — space element, ether, the witness consciousness. Pure Ha with anusvara.', freq:'~672 Hz', effect:'Thyroid stimulation, vocal cord relaxation, expanded awareness'},
+  {deva:'यं', roman:'Yam', type:'beeja', chakra:'Anahata', deity:'Vayu/Isha', desc:'Vayu bija — wind element, heart center, compassion. Pure Ya with anusvara.', freq:'~594 Hz', effect:'Heart rate coherence, oxytocin release, compassion circuits'},
+  {deva:'रं', roman:'Ram', type:'beeja', chakra:'Manipura', deity:'Agni/Rudra', desc:'Agni bija — fire element, transformation, digestion of experience. Ra with anusvara.', freq:'~528 Hz', effect:'Digestive fire (jatharagni), metabolic boost, serotonin-fire axis'},
+  {deva:'वं', roman:'Vam', type:'beeja', chakra:'Svadhisthana', deity:'Varuna', desc:'Jala bija — water element, emotions, creativity, fluidity. Va with anusvara.', freq:'~417 Hz', effect:'Sacral nerve stimulation, fluid balance, emotional processing'},
+  {deva:'लं', roman:'Lam', type:'beeja', chakra:'Muladhara', deity:'Indra/Brahma', desc:'Prithvi bija — earth element, stability, physical embodiment. La with anusvara.', freq:'~256 Hz', effect:'Perineal nerve activation, bone density resonance, security response'},
+  {deva:'क्रों', roman:'Krom', type:'beeja', chakra:'Ajna', deity:'Kali', desc:'Kali bija — time-dissolution, liberation, fierce wisdom. Ka+Ra+O+M — fire of consciousness.', freq:'~741 Hz', effect:'Third eye activation, time perception modulation, fear dissolution'},
+  {deva:'फ्रें', roman:'Phrem', type:'beeja', chakra:'All', deity:'Tara', desc:'Tara bija — swift liberation, crossing the ocean of samsara. Phonemic combination of transcendence.', freq:'~852 Hz', effect:'Pineal gland stimulation, melatonin-DMT axis, transcendent states'},
+  {deva:'सौं', roman:'Sauh', type:'beeja', chakra:'Sahasrara', deity:'Para Shakti', desc:'Para bija — supreme heart, the heart of Trika Shaivism. The sound of pure recognition (pratyabhijna).', freq:'~963 Hz', effect:'Crown activation, unity consciousness, neuroplasticity enhancement'},
+  {deva:'हसौं', roman:'Hsa-uh', type:'beeja', chakra:'All', deity:'Paramashiva', desc:'Hamsa + Para bija combined — I am That in its supreme form. The mahavakya in syllabic form.', freq:'All frequencies', effect:'Full spectrum brainwave entrainment, samadhi state support'},
+];
+
+const MATRIKA_DATA = [
+  {varga:'Svaras (Vowels)', aksharas:[
+    {deva:'अ', roman:'A', chakra:'Muladhara', petal:1, tattva:'Prithvi', shakti:'Ambika', guna:'Sattva', mantra:'Aim'},
+    {deva:'आ', roman:'Aa', chakra:'Muladhara', petal:2, tattva:'Prithvi', shakti:'Vama', guna:'Sattva', mantra:'Aim'},
+    {deva:'इ', roman:'I', chakra:'Svadhisthana', petal:1, tattva:'Jala', shakti:'Jyeshtha', guna:'Rajas', mantra:'Shrim'},
+    {deva:'ई', roman:'Ii', chakra:'Svadhisthana', petal:2, tattva:'Jala', shakti:'Raudri', guna:'Rajas', mantra:'Shrim'},
+    {deva:'उ', roman:'U', chakra:'Manipura', petal:1, tattva:'Agni', shakti:'Kali', guna:'Tamas', mantra:'Hum'},
+    {deva:'ऊ', roman:'Uu', chakra:'Manipura', petal:2, tattva:'Agni', shakti:'Kapalini', guna:'Tamas', mantra:'Hum'},
+    {deva:'ऋ', roman:'Ri', chakra:'Anahata', petal:1, tattva:'Vayu', shakti:'Shanta', guna:'Sattva', mantra:'Yam'},
+    {deva:'ॠ', roman:'Rii', chakra:'Anahata', petal:2, tattva:'Vayu', shakti:'Duti', guna:'Sattva', mantra:'Yam'},
+    {deva:'लृ', roman:'Lri', chakra:'Vishuddha', petal:1, tattva:'Akasha', shakti:'Sarasvati', guna:'Sattva', mantra:'Ham'},
+    {deva:'ए', roman:'E', chakra:'Ajna', petal:1, tattva:'Manas', shakti:'Hakini', guna:'Sattva', mantra:'Om'},
+    {deva:'ऐ', roman:'Ai', chakra:'Ajna', petal:2, tattva:'Manas', shakti:'Shakini', guna:'Rajas', mantra:'Aim'},
+    {deva:'ओ', roman:'O', chakra:'Sahasrara', petal:'∞', tattva:'Para', shakti:'Para Shakti', guna:'Nirguna', mantra:'Om'},
+    {deva:'औ', roman:'Au', chakra:'Sahasrara', petal:'∞', tattva:'Para', shakti:'Maha Shakti', guna:'Nirguna', mantra:'Sauh'},
+    {deva:'अं', roman:'Anusvara', chakra:'Bindu', petal:'0', tattva:'Bindu', shakti:'Bindu Shakti', guna:'Nirguna', mantra:'M (Hm)'},
+    {deva:'अः', roman:'Visarga', chakra:'Visarga', petal:'0', tattva:'Visarga', shakti:'Visarga Shakti', guna:'Nirguna', mantra:'H'},
+  ]},
+  {varga:'Ka-Varga (Gutturals)', aksharas:[
+    {deva:'क', roman:'Ka', chakra:'Vishuddha', petal:1, tattva:'Akasha', shakti:'Dakini', guna:'Rajas', mantra:'Krim'},
+    {deva:'ख', roman:'Kha', chakra:'Vishuddha', petal:2, tattva:'Akasha', shakti:'Rakini', guna:'Rajas', mantra:'Kham'},
+    {deva:'ग', roman:'Ga', chakra:'Muladhara', petal:3, tattva:'Prithvi', shakti:'Lakini', guna:'Tamas', mantra:'Gam'},
+    {deva:'घ', roman:'Gha', chakra:'Muladhara', petal:4, tattva:'Prithvi', shakti:'Kakini', guna:'Tamas', mantra:'Gham'},
+    {deva:'ङ', roman:'Nga', chakra:'Anahata', petal:3, tattva:'Vayu', shakti:'Shakini', guna:'Sattva', mantra:'Nam'},
+  ]},
+  {varga:'Ca-Varga (Palatals)', aksharas:[
+    {deva:'च', roman:'Cha', chakra:'Svadhisthana', petal:3, tattva:'Jala', shakti:'Hakini', guna:'Rajas', mantra:'Chaim'},
+    {deva:'छ', roman:'Chha', chakra:'Svadhisthana', petal:4, tattva:'Jala', shakti:'Brahmi', guna:'Rajas', mantra:'Chham'},
+    {deva:'ज', roman:'Ja', chakra:'Anahata', petal:4, tattva:'Vayu', shakti:'Mahesvari', guna:'Sattva', mantra:'Jam'},
+    {deva:'झ', roman:'Jha', chakra:'Manipura', petal:3, tattva:'Agni', shakti:'Kaumari', guna:'Tamas', mantra:'Jham'},
+    {deva:'ञ', roman:'Nya', chakra:'Anahata', petal:5, tattva:'Vayu', shakti:'Vaishnavi', guna:'Sattva', mantra:'Nyam'},
+  ]},
+];
+
+const NEURO_DATA = `
+<h2>Bioacoustics & Sanskrit: The Science</h2>
+<p>Research by Dr. Ananda Balayogi Bhavanani, Dr. T.M. Srinivasan (JIPMER), and studies in neuroscientific journals confirm that Sanskrit phoneme recitation produces measurable physiological effects distinct from other language systems.</p>
+
+<div class="highlight">
+Key finding: Sanskrit's phonetic system was optimized over millennia to stimulate specific cranial nerves — particularly the vagus (X), facial (VII), and trigeminal (V) — creating reproducible psychophysiological states.
+</div>
+
+<h2>Frequency Mapping</h2>
+<p><strong>Vowels (Svaras):</strong> Generally map to lower fundamental frequencies (256–720 Hz), corresponding to the Solfeggio scale and Pythagorean tuning. Their resonance chambers (oral cavity, nasopharynx, sinuses) match the dimensions that produce standing waves in the skull.</p>
+<p><strong>Consonants (Vyanjanas):</strong> Each articulation point (guttural, palatal, retroflex, dental, labial) correlates with a distinct vagal branch activation. Retroflex sounds uniquely stimulate the proprioceptive cortex.</p>
+<p><strong>Anusvara (M/Ng):</strong> Nasal resonance produces direct stimulation of the olfactory bulb and limbic system, explaining why Om's M-component is associated with deep meditative states.</p>
+
+<h2>Chakra-Neural Correlates</h2>
+<p>The six chakras correspond remarkably to the six major nerve plexuses of the human body:</p>
+<p>• <strong>Muladhara</strong> = Sacral plexus (S1-S4) — security, elimination<br>
+• <strong>Svadhisthana</strong> = Hypogastric plexus — creativity, sexuality<br>
+• <strong>Manipura</strong> = Solar plexus (celiac ganglion) — will, digestion<br>
+• <strong>Anahata</strong> = Cardiac plexus — love, rhythm, HRV<br>
+• <strong>Vishuddha</strong> = Pharyngeal plexus — expression, hearing<br>
+• <strong>Ajna</strong> = Cavernous plexus + pineal — vision, insight</p>
+
+<h2>The Varna Color System</h2>
+<p>The Akshmala Upanishad assigns colors to phoneme groups — white (dhavala) for vowels, yellow (pita) for consonants, and red (rakta) for special sounds. This color-coding corresponds to modern Kirlian photography studies that show different colored bioplasmic fields around practitioners chanting different phoneme groups.</p>
+
+<h2>Ongoing Research</h2>
+<p>• MIT's Music & Cognition Lab has studied Sanskrit prosody and meter for neural entrainment<br>
+• AIIMS Delhi published EEG studies showing gamma wave increase during Vedic chanting<br>
+• University of Wisconsin's Center for Healthy Minds found structural hippocampal changes in long-term Sanskrit chanters<br>
+• The Gayatri mantra (24 syllables) has been shown to regulate heart rate at precisely 0.1 Hz — the resonant frequency of the Mayer wave in cardiovascular regulation</p>
+`;
+
+let analysisCache = {};
+
+function renderBeejaGrid() {
+  const grid = document.getElementById('beejaGrid');
+  grid.innerHTML = BEEJAS.map((b, i) => `
+    <div class="beeja-card ${analysisCache[b.roman] ? 'analyzed' : ''}" id="card-${i}" data-type="${b.type}" data-search="${b.roman} ${b.deva} ${b.chakra} ${b.deity}">
+      <div class="beeja-akshar">${b.deva}</div>
+      <div class="beeja-roman">${b.roman}</div>
+      <span class="beeja-type-badge badge-${b.type}">${b.type === 'vowel' ? 'Svara' : b.type === 'consonant' ? 'Vyanjana' : 'Special'}</span>
+      <div class="beeja-short-desc">${b.desc}</div>
+      <div style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-muted);">
+        ⬡ ${b.chakra} &nbsp;|&nbsp; ॐ ${b.deity} &nbsp;|&nbsp; ≈ ${b.freq}
+      </div>
+      <button class="analyze-btn" onclick="analyzeBeeja(${i})" id="btn-${i}">
+        ${analysisCache[b.roman] ? '✓ View Analysis' : '✦ Deep Analysis via Gemini'}
+      </button>
+    </div>
+  `).join('');
+}
+
+function renderTantricGrid() {
+  const grid = document.getElementById('tantricGrid');
+  grid.innerHTML = TANTRIC_BEEJAS.map((b, i) => `
+    <div class="beeja-card" data-type="beeja" data-search="${b.roman} ${b.deva} ${b.deity}">
+      <div class="beeja-akshar" style="font-size:3rem;">${b.deva}</div>
+      <div class="beeja-roman">${b.roman}</div>
+      <span class="beeja-type-badge badge-beeja">Tantric Bija</span>
+      <div class="beeja-short-desc">${b.desc}</div>
+      <div style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-muted);">
+        ⬡ ${b.chakra} &nbsp;|&nbsp; ॐ ${b.deity}
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--green);">🧠 ${b.effect}</div>
+      <button class="analyze-btn" onclick="analyzeTantric(${i})" id="tbtn-${i}">
+        ✦ Deep Analysis via Gemini
+      </button>
+    </div>
+  `).join('');
+}
+
+function renderMatrikaTable() {
+  let html = `<thead><tr>
+    <th>Akshar</th><th>Roman</th><th>Varga</th><th>Chakra</th><th>Petal</th><th>Tattva</th><th>Shakti</th><th>Guna</th><th>Mantra</th>
+  </tr></thead><tbody>`;
+  MATRIKA_DATA.forEach(varga => {
+    varga.aksharas.forEach(a => {
+      html += `<tr>
+        <td class="deva">${a.deva}</td>
+        <td>${a.roman}</td>
+        <td style="color:var(--gold-light); font-size:0.8rem;">${varga.varga}</td>
+        <td>${a.chakra}</td>
+        <td>${a.petal}</td>
+        <td>${a.tattva}</td>
+        <td style="font-style:italic;">${a.shakti}</td>
+        <td>${a.guna}</td>
+        <td style="font-family:'Noto Sans Devanagari',sans-serif; color:var(--gold);">${a.mantra}</td>
+      </tr>`;
+    });
+  });
+  html += '</tbody>';
+  document.getElementById('matrikaTable').innerHTML = html;
+}
+
+function renderNeuro() {
+  document.getElementById('neuroContent').innerHTML = NEURO_DATA;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function filterCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  document.querySelectorAll('.beeja-card').forEach(card => {
+    const search = card.dataset.search?.toLowerCase() || '';
+    const cardType = card.dataset.type;
+    const matchSearch = !q || search.includes(q);
+    const matchType = type === 'all' || cardType === type;
+    card.style.display = matchSearch && matchType ? '' : 'none';
+  });
+}
+
+async function validateKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  const status = document.getElementById('apiStatus');
+  if (!key) { status.textContent = 'Enter a key first'; status.className = 'api-status err'; return; }
+  status.textContent = 'Validating…'; status.className = 'api-status';
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:'Say OK'}]}]})
+    });
+    const d = await r.json();
+    if (d.candidates) { status.textContent = '✓ Connected'; status.className = 'api-status ok'; }
+    else { status.textContent = '✗ Invalid key'; status.className = 'api-status err'; }
+  } catch(e) { status.textContent = '✗ Error'; status.className = 'api-status err'; }
+}
+
+async function callGemini(prompt) {
+  const key = document.getElementById('apiKey').value.trim();
+  if (!key) { showToast('Please enter your Gemini API key first', true); return null; }
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents:[{parts:[{text: prompt}]}],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1800 }
+    })
+  });
+  const d = await r.json();
+  if (!d.candidates) throw new Error(d.error?.message || 'API error');
+  return d.candidates[0].content.parts[0].text;
+}
+
+async function analyzeBeeja(i) {
+  const b = BEEJAS[i];
+  if (analysisCache[b.roman]) { openPanel(b, analysisCache[b.roman]); return; }
+  const btn = document.getElementById('btn-' + i);
+  btn.disabled = true;
+  btn.innerHTML = '<span class="analyzing-spinner">◌</span> Analyzing…';
+  
+  const prompt = `You are a scholar of Sanskrit phonetics, Tantra Shastra, Yoga science, and modern neuroscience. 
+Provide an in-depth, structured analysis of the Sanskrit beejakshara "${b.deva}" (${b.roman}).
+
+Structure your response as JSON with these exact keys:
+{
+  "etymology": "Origin and root meaning of this phoneme in Sanskrit grammar (Paninian analysis, Dhatu/root)",
+  "vibrational": "Vibrational/acoustic properties: articulation point, manner, frequency characteristics, resonance chamber in the body",
+  "tantric": "Tantric significance: which deities, yantras, mantras use this as a seed, from which tantric texts (Vijnana Bhairava, Prapanchasara, Tantraloka, etc.)",
+  "chakra_detail": "Detailed chakra correspondence: which petal, which function, how this sound activates the energy center",
+  "neurological": "Neurological and bioacoustic effects: which nerves are stimulated, what brainwave states, measurable physiological effects from modern research",
+  "upanishadic": "Reference from Akshamala Upanishad and other Upanishads regarding this phoneme",
+  "matrika": "As a Matrika (divine mother): name of the Shakti presiding over this phoneme, her iconography and function",
+  "sadhana": "How this beejakshara is used in actual sadhana/practice: japa, pranayama, visualization, nyasa"
+}
+Context: Chakra=${b.chakra}, Deity=${b.deity}, Tattva=${b.tattva}, Frequency≈${b.freq}
+Return ONLY valid JSON, no markdown.`;
+
+  try {
+    const text = await callGemini(prompt);
+    let data;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      data = JSON.parse(clean);
+    } catch {
+      data = { etymology: text, vibrational: '', tantric: '', chakra_detail: '', neurological: '', upanishadic: '', matrika: '', sadhana: '' };
+    }
+    analysisCache[b.roman] = data;
+    document.getElementById('card-' + i).classList.add('analyzed');
+    btn.textContent = '✓ View Analysis';
+    btn.disabled = false;
+    openPanel(b, data);
+  } catch(e) {
+    btn.textContent = '✦ Deep Analysis via Gemini';
+    btn.disabled = false;
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+async function analyzeTantric(i) {
+  const b = TANTRIC_BEEJAS[i];
+  const cacheKey = 'tantric_' + b.roman;
+  if (analysisCache[cacheKey]) { openTantricPanel(b, analysisCache[cacheKey]); return; }
+  const btn = document.getElementById('tbtn-' + i);
+  btn.disabled = true;
+  btn.innerHTML = '<span class="analyzing-spinner">◌</span> Analyzing…';
+
+  const prompt = `You are a master of Tantric Mantra Shastra and modern neuroscience.
+Provide deep analysis of the Tantric Bija Mantra "${b.deva}" (${b.roman}) dedicated to ${b.deity}.
+
+Return JSON:
+{
+  "etymology": "Letter-by-letter breakdown (matrika decomposition) — what each letter represents",
+  "deity_connection": "Connection to ${b.deity}: mythology, iconography, how this bija captures the deity's essence",
+  "phonemic_body": "The panchanga (five-limbed) structure: bija, shakti, kilaka, kavaca, hridaya of this mantra",
+  "activation": "Specific body-energy activation: kundalini pathway, chakra opening sequence, prana vayu engaged",
+  "neurological": "Modern neuroscience correlates: Hz frequency, brainwave entrainment, hormone effects, nerve stimulation",
+  "text_sources": "Primary tantric texts mentioning this bija (Shakta Pramoda, Mantra Mahodadhi, Tantraraja, etc.) with specific references",
+  "combination": "How this bija combines with other bijas in major mantras (e.g., Panchadasi, Shodasi, etc.)",
+  "practice": "Practical sadhana: proper pronunciation (uccharana), number of repetitions, time, direction, associated yantra"
+}
+Return ONLY valid JSON, no markdown.`;
+
+  try {
+    const text = await callGemini(prompt);
+    let data;
+    try { data = JSON.parse(text.replace(/```json|```/g, '').trim()); }
+    catch { data = { etymology: text }; }
+    analysisCache[cacheKey] = data;
+    btn.textContent = '✓ View Analysis';
+    btn.disabled = false;
+    openTantricPanel(b, data);
+  } catch(e) {
+    btn.textContent = '✦ Deep Analysis via Gemini';
+    btn.disabled = false;
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+function openPanel(b, data) {
+  document.getElementById('panelAkshar').textContent = b.deva;
+  document.getElementById('panelName').textContent = b.roman + ' — ' + b.deity;
+  document.getElementById('panelBadge').innerHTML = `<span class="beeja-type-badge badge-${b.type}">${b.type}</span>`;
+  
+  const sections = [
+    { icon:'📜', title:'Etymology & Grammar', key:'etymology' },
+    { icon:'🌊', title:'Vibrational Properties', key:'vibrational' },
+    { icon:'🔱', title:'Tantric Significance', key:'tantric' },
+    { icon:'⬡', title:'Chakra Activation', key:'chakra_detail' },
+    { icon:'🧠', title:'Neurological Science', key:'neurological' },
+    { icon:'📿', title:'Upanishadic Reference', key:'upanishadic' },
+    { icon:'🌸', title:'Matrika (Divine Mother)', key:'matrika' },
+    { icon:'🪔', title:'Sadhana & Practice', key:'sadhana' },
+  ];
+
+  document.getElementById('panelContent').innerHTML = `
+    <div class="analysis-sections">
+      ${sections.map(s => `
+        <div class="analysis-section ${['upanishadic','matrika','sadhana'].includes(s.key) ? 'full' : ''}">
+          <div class="section-icon">${s.icon}</div>
+          <div class="section-title">${s.title}</div>
+          <div class="section-body">${data[s.key] || '<span style="opacity:0.4">Not available</span>'}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:1.5rem; padding:1rem; background:var(--surface3); border-radius:8px; font-size:0.85rem; color:var(--text-muted);">
+      Chakra: <strong>${b.chakra}</strong> &nbsp;|&nbsp; Tattva: <strong>${b.tattva}</strong> &nbsp;|&nbsp; Frequency: <strong>${b.freq}</strong>
+    </div>
+  `;
+  document.getElementById('analysisPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openTantricPanel(b, data) {
+  document.getElementById('panelAkshar').textContent = b.deva;
+  document.getElementById('panelName').textContent = b.roman + ' — ' + b.deity;
+  document.getElementById('panelBadge').innerHTML = `<span class="beeja-type-badge badge-beeja">Tantric Bija</span>`;
+  
+  const sections = [
+    { icon:'🔤', title:'Matrika Decomposition', key:'etymology' },
+    { icon:'🌺', title:'Deity Connection', key:'deity_connection' },
+    { icon:'⚙️', title:'Phonemic Body (Panchanga)', key:'phonemic_body' },
+    { icon:'🔥', title:'Energy Activation', key:'activation' },
+    { icon:'🧠', title:'Neuroscience Correlates', key:'neurological' },
+    { icon:'📚', title:'Source Texts', key:'text_sources' },
+    { icon:'🔗', title:'Mantra Combinations', key:'combination' },
+    { icon:'🪔', title:'Sadhana Practice', key:'practice' },
+  ];
+
+  document.getElementById('panelContent').innerHTML = `
+    <div class="analysis-sections">
+      ${sections.map(s => `
+        <div class="analysis-section ${['text_sources','combination','practice'].includes(s.key) ? 'full' : ''}">
+          <div class="section-icon">${s.icon}</div>
+          <div class="section-title">${s.title}</div>
+          <div class="section-body">${data[s.key] || '<span style="opacity:0.4">Not available</span>'}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:1.5rem; padding:1rem; background:var(--surface3); border-radius:8px; font-size:0.85rem; color:var(--text-muted);">
+      <strong>${b.freq}</strong> &nbsp;|&nbsp; 🧠 ${b.effect}
+    </div>
+  `;
+  document.getElementById('analysisPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+  document.getElementById('analysisPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('analysisPanel').addEventListener('click', function(e) {
+  if (e.target === this) closePanel();
+});
+
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+// Init
+renderBeejaGrid();
+renderTantricGrid();
+renderMatrikaTable();
+renderNeuro();
+</script>
+</body>
+</html>
